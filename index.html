@@ -212,6 +212,13 @@
     box-shadow: 0 0 10px var(--glow-gold);
   }
 
+  .mode-btn.selected-mode {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: var(--saber-blue);
+    color: var(--saber-blue);
+    box-shadow: 0 0 12px var(--glow-blue);
+  }
+
   /* ===== BUTTONS ===== */
   .btn-primary {
     width: 100%;
@@ -679,6 +686,13 @@
       </div>
 
       <div class="number-grid" id="numGrid"></div>
+
+      <span class="setup-label" style="margin-top:16px;">▸ Select operation mode</span>
+      <div class="quick-btns" id="modeButtons">
+        <button class="quick-btn mode-btn selected-mode" data-mode="multiply" onclick="setMode('multiply')">× Multiply</button>
+        <button class="quick-btn mode-btn" data-mode="divide" onclick="setMode('divide')">÷ Divide</button>
+        <button class="quick-btn mode-btn" data-mode="both" onclick="setMode('both')">⊕ Both</button>
+      </div>
 
       <div class="error-msg" id="setupError"></div>
       <div class="saber-divider"></div>
@@ -1152,9 +1166,11 @@ function launchShip() {
 // ===== APP STATE =====
 let selectedNums = new Set([0,1,2,3,4,5,6,7,8,9,10,11,12]);
 let questions = [];
+let questionOps = [];   // 'multiply' | 'divide' per question
 let answers = [];
 let currentQ = 0;
 let score = 0;
+let gameMode = 'multiply';
 
 // ===== SETUP =====
 const grid = document.getElementById('numGrid');
@@ -1188,6 +1204,14 @@ function selectNone() {
   document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('selected'));
 }
 
+function setMode(m) {
+  gameMode = m;
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.classList.toggle('selected-mode', btn.dataset.mode === m);
+  });
+  document.getElementById('setupError').textContent = '';
+}
+
 function selectRange(a, b) {
   selectedNums.clear();
   document.querySelectorAll('.num-btn').forEach(btn => {
@@ -1204,20 +1228,37 @@ function startQuiz() {
   }
   const nums = [...selectedNums];
   questions = [];
+  questionOps = [];
   const pool = [];
-  nums.forEach(a => nums.forEach(b => pool.push([a, b])));
+  const opPool = [];
 
-  // shuffle + pick 20
-  for (let i = pool.length - 1; i > 0; i--) {
+  if (gameMode === 'multiply' || gameMode === 'both') {
+    nums.forEach(a => nums.forEach(b => { pool.push([a, b]); opPool.push('multiply'); }));
+  }
+  if (gameMode === 'divide' || gameMode === 'both') {
+    nums.forEach(a => nums.forEach(b => {
+      if (b > 0) { pool.push([a * b, b]); opPool.push('divide'); }
+    }));
+  }
+
+  if (pool.length === 0) {
+    document.getElementById('setupError').textContent = '⚠ No valid problems — select non-zero numbers for division';
+    return;
+  }
+
+  // shuffle pool + opPool together
+  const combined = pool.map((q, i) => ({ q, op: opPool[i] }));
+  for (let i = combined.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
+    [combined[i], combined[j]] = [combined[j], combined[i]];
   }
-  questions = pool.slice(0, Math.min(20, pool.length));
-  // pad if < 20
-  while (questions.length < 20) {
-    const extra = pool[Math.floor(Math.random() * pool.length)];
-    questions.push([...extra]);
+  const picked = combined.slice(0, Math.min(20, combined.length));
+  while (picked.length < 20) {
+    const extra = combined[Math.floor(Math.random() * combined.length)];
+    picked.push({ q: [...extra.q], op: extra.op });
   }
+  questions = picked.map(x => x.q);
+  questionOps = picked.map(x => x.op);
 
   answers = new Array(20).fill(null);
   currentQ = 0;
@@ -1228,6 +1269,17 @@ function startQuiz() {
   loadQuestion(0);
   setTimeout(() => document.getElementById('answerInput').focus(), 100);
   sounds.missionStart();
+}
+
+// ===== HELPERS =====
+function getCorrectAnswer(i) {
+  const [a, b] = questions[i];
+  return questionOps[i] === 'divide' ? a / b : a * b;
+}
+
+function getQuestionText(i) {
+  const [a, b] = questions[i];
+  return questionOps[i] === 'divide' ? `${a} ÷ ${b} = ?` : `${a} × ${b} = ?`;
 }
 
 // ===== QUIZ =====
@@ -1248,8 +1300,7 @@ function updateNavDots() {
   dots.forEach((dot, i) => {
     dot.className = 'nav-dot';
     if (answers[i] !== null) {
-      const [a, b] = questions[i];
-      dot.classList.add(answers[i] == a * b ? 'answered-correct' : 'answered-wrong');
+      dot.classList.add(answers[i] == getCorrectAnswer(i) ? 'answered-correct' : 'answered-wrong');
     }
     if (i === currentQ) dot.classList.add('current');
   });
@@ -1257,9 +1308,8 @@ function updateNavDots() {
 
 function loadQuestion(idx) {
   currentQ = idx;
-  const [a, b] = questions[idx];
   document.getElementById('questionNum').textContent = `PROBLEM ${idx + 1} OF ${questions.length}`;
-  document.getElementById('questionText').textContent = `${a} × ${b} = ?`;
+  document.getElementById('questionText').textContent = getQuestionText(idx);
   document.getElementById('progressText').textContent = `${idx + 1} / ${questions.length}`;
   document.getElementById('progressFill').style.width = `${((idx + 1) / questions.length) * 100}%`;
 
@@ -1271,8 +1321,7 @@ function loadQuestion(idx) {
 
   // recolor if already answered
   if (answers[idx] !== null) {
-    const correct = a * b;
-    input.classList.add(answers[idx] == correct ? 'correct' : 'wrong');
+    input.classList.add(answers[idx] == getCorrectAnswer(idx) ? 'correct' : 'wrong');
   }
 
   updateNavDots();
@@ -1283,10 +1332,7 @@ function loadQuestion(idx) {
 function updateScoreLive() {
   let s = 0;
   answers.forEach((ans, i) => {
-    if (ans !== null) {
-      const [a, b] = questions[i];
-      if (ans == a * b) s++;
-    }
+    if (ans !== null && ans == getCorrectAnswer(i)) s++;
   });
   score = s;
   document.getElementById('scoreLive').textContent = `${s} ✓`;
@@ -1332,8 +1378,7 @@ function submitAnswer() {
   }
 
   answers[currentQ] = num;
-  const [a, b] = questions[currentQ];
-  const correct = a * b;
+  const correct = getCorrectAnswer(currentQ);
   const isCorrect = num === correct;
 
   input.className = 'answer-input ' + (isCorrect ? 'correct' : 'wrong');
@@ -1377,9 +1422,9 @@ function showResults() {
   let correct = 0;
   const missed = [];
   answers.forEach((ans, i) => {
-    const [a, b] = questions[i];
-    if (ans == a * b) correct++;
-    else missed.push({ q: `${a} × ${b}`, yours: ans, correct: a * b });
+    const correctAns = getCorrectAnswer(i);
+    if (ans == correctAns) correct++;
+    else missed.push({ q: getQuestionText(i).replace(' = ?', ''), yours: ans, correct: correctAns });
   });
 
   const pct = correct / questions.length;
@@ -1423,10 +1468,11 @@ function retryQuiz() {
   answers = new Array(questions.length).fill(null);
   currentQ = 0;
   score = 0;
-  // reshuffle
+  // reshuffle questions and ops together
   for (let i = questions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [questions[i], questions[j]] = [questions[j], questions[i]];
+    [questionOps[i], questionOps[j]] = [questionOps[j], questionOps[i]];
   }
   buildNavDots();
   showScreen('quiz');
