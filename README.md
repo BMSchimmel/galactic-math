@@ -7,7 +7,7 @@ Space themed math trainer for elementary school kids
 
 ## ✨ Features
 
-- **20-question multiplication quizzes** — randomized every time
+- **20-question multiplication or diviision quizzes** — randomized every time
 - **Pick your numbers** — select any combination of 0–12
 - **Keyboard-first navigation** — Enter to submit, ← → to move between questions, no mouse needed
 - **Space sound effects** — lightsaber hums, drioid beeps, and blaster buzzes (Web Audio API, no files needed)
