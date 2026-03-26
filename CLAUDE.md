@@ -61,15 +61,6 @@ The entire app lives in `index.html`. No build system, no dependencies, no frame
 - 50%+ → Rebel Recruit 🚀
 - <50% → Youngling 🌱
 
-## Possible Future Features (ask before starting)
-
-- Division mode
-- Timed challenge mode
-- Addition / subtraction modes
-- More ships (Millennium Falcon, TIE Fighter)
-- Printable results / share score
-- Adaptive difficulty (asks more of what you got wrong)
-
 ## What to Always Do
 
 - Test changes by opening `index.html` directly in a browser — no server needed
