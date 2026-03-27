@@ -935,6 +935,19 @@
     filter: drop-shadow(0 0 6px var(--saber-blue));
   }
 
+  /* Hyperspace difficulty slide-down */
+  #hyperspaceOptions {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.25s ease;
+    opacity: 0;
+  }
+  #hyperspaceOptions.open {
+    max-height: 200px;
+    opacity: 1;
+  }
+
   /* Hyperspace difficulty grid */
   .diff-grid {
     display: grid;
@@ -1278,7 +1291,7 @@
             </div>
             <span class="tile-badge" id="hyperspaceBadge">OFF</span>
           </button>
-          <div id="hyperspaceOptions" style="display:none;">
+          <div id="hyperspaceOptions">
             <div class="diff-grid" id="difficultyBtns">
               <button class="diff-btn selected-mode" data-diff="wicked-easy" onclick="setDifficulty('wicked-easy')">
                 <span class="diff-icon">😌</span>
@@ -1928,7 +1941,7 @@ function toggleHyperspace() {
   const btn = document.getElementById('hyperspaceToggle');
   btn.classList.toggle('selected-mode', hyperspaceEnabled);
   document.getElementById('hyperspaceBadge').textContent = hyperspaceEnabled ? 'ON' : 'OFF';
-  document.getElementById('hyperspaceOptions').style.display = hyperspaceEnabled ? 'block' : 'none';
+  document.getElementById('hyperspaceOptions').classList.toggle('open', hyperspaceEnabled);
   if (hyperspaceEnabled) {
     sounds.modeActivate();
     if (kesselRunEnabled) {
@@ -2035,7 +2048,7 @@ function toggleKesselRun() {
       hyperspaceEnabled = false;
       document.getElementById('hyperspaceToggle').classList.remove('selected-mode');
       document.getElementById('hyperspaceBadge').textContent = 'OFF';
-      document.getElementById('hyperspaceOptions').style.display = 'none';
+      document.getElementById('hyperspaceOptions').classList.remove('open');
     }
   } else {
     sounds.navigate();
