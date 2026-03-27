@@ -85,6 +85,9 @@ Before opening a PR verify:
 - [ ] Keyboard navigation works (Enter, ←→ arrows)
 - [ ] X-Wing flyby triggers on a passing score (≥75%)
 - [ ] Results screen shows correct score and missed problems
+- [ ] Hyperspace mode countdown works and ends the quiz on timeout
+- [ ] Theme cycler button cycles through all 5 themes without visual breakage
+- [ ] Footer link opens `pages/feedback.html` and feedback form submits correctly
 - [ ] Page is usable on mobile (resize browser to ~375px wide)
 
 ---

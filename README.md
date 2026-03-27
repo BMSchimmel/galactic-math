@@ -10,8 +10,10 @@ Space themed math trainer for elementary school kids
 - **20-question quizzes** — multiplication, division, addition, subtraction, or any combo — randomized every time
 - **Pick your numbers** — select any combination of 0–12
 - **Keyboard-first navigation** — Enter to submit, ← → to move between questions, no mouse needed
-- **Space sound effects** — lightsaber hums, drioid beeps, and blaster buzzes (Web Audio API, no files needed)
-- **Spaceship flyby celebration** — passing scores (75%+) trigger a fly-by with exhaust trails
+- **Space sound effects** — lightsaber hums, droid beeps, and blaster buzzes (Web Audio API, no files needed)
+- **Spaceship flyby celebration** — passing scores (75%+) trigger an X-Wing fly-by with exhaust trails
+- **Hyperspace mode** — optional timed challenge: complete all 20 questions before the jump countdown hits zero
+- **Theme cycler** — switch between Dark, Dim, Midnight, Deep Blue, and Retro color themes
 - **Live grading** — see your score as you go, full breakdown at the end with missed problems reviewed
 - **Rank system** — Youngling → Rebel Recruit → Padawan → Jedi Knight → Jedi Master ⭐
 - **Zero dependencies** — one HTML file, works offline, no internet required after first load
