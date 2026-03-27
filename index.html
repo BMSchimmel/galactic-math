@@ -17,9 +17,11 @@
     --gold: #ffd700;
     --star-white: #e8f4ff;
     --muted: #6b7fa3;
+    --saber-purple: #b94fff;
     --glow-blue: rgba(0, 212, 255, 0.3);
     --glow-green: rgba(57, 255, 20, 0.3);
     --glow-gold: rgba(255, 215, 0, 0.4);
+    --glow-purple: rgba(185, 79, 255, 0.3);
     --nebula-glow-1: rgba(26, 39, 68, 0.6);
     --nebula-glow-2: rgba(60, 20, 80, 0.4);
   }
@@ -111,26 +113,6 @@
     50% { opacity: 1; transform: scale(1.3); }
   }
 
-  /* Nebula bg */
-  body::before {
-    content: '';
-    position: fixed;
-    top: -20%; left: -20%;
-    width: 70%; height: 70%;
-    background: radial-gradient(ellipse, var(--nebula-glow-1) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  body::after {
-    content: '';
-    position: fixed;
-    bottom: -20%; right: -20%;
-    width: 60%; height: 60%;
-    background: radial-gradient(ellipse, var(--nebula-glow-2) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
 
   .container {
     position: relative;
@@ -143,6 +125,17 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding-bottom: 0;
+  }
+
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
 
   /* ===== TITLE ===== */
@@ -279,15 +272,15 @@
 
   /* Op mode color groups */
   .quick-btn.op-mul-div {
-    border-color: rgba(0, 212, 255, 0.3);
-    color: var(--saber-blue);
+    border-color: rgba(185, 79, 255, 0.3);
+    color: var(--saber-purple);
   }
   .quick-btn.op-mul-div:hover,
   .quick-btn.op-mul-div.selected-mode {
-    background: rgba(0, 212, 255, 0.12);
-    border-color: var(--saber-blue);
-    color: var(--saber-blue);
-    box-shadow: 0 0 12px var(--glow-blue);
+    background: rgba(185, 79, 255, 0.12);
+    border-color: var(--saber-purple);
+    color: var(--saber-purple);
+    box-shadow: 0 0 12px var(--glow-purple);
   }
   .quick-btn.op-add-sub {
     border-color: rgba(57, 255, 20, 0.3);
@@ -301,15 +294,83 @@
     box-shadow: 0 0 12px var(--glow-green);
   }
 
-  /* Game modes side-by-side layout */
-  .game-modes-row {
+  /* Game mode tiles */
+  .game-mode-tiles {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     align-items: flex-start;
   }
-  .game-mode-col {
+  .game-mode-tile-wrap {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .game-mode-tile-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(10, 15, 30, 0.6);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: left;
+  }
+  .game-mode-tile-btn:hover {
+    border-color: rgba(0, 212, 255, 0.4);
+    background: rgba(0, 212, 255, 0.05);
+  }
+  .game-mode-tile-btn.selected-mode {
+    border-color: var(--saber-blue);
+    background: rgba(0, 212, 255, 0.08);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+  }
+  .tile-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .tile-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .tile-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--star-white);
+    margin-bottom: 3px;
+  }
+  .tile-desc {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+  .tile-badge {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    color: var(--muted);
+    background: transparent;
+    transition: all 0.25s;
+    flex-shrink: 0;
+  }
+  .game-mode-tile-btn.selected-mode .tile-badge {
+    color: var(--saber-blue);
+    border-color: var(--saber-blue);
+    background: rgba(0, 212, 255, 0.1);
+  }
+  @media (max-width: 480px) {
+    .game-mode-tiles { flex-direction: column; }
   }
 
   /* Restart button */
@@ -896,26 +957,29 @@
 
   .kessel-penalty-flash {
     position: fixed;
-    top: 40%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-family: 'Orbitron', monospace;
-    font-size: 28px;
+    font-size: 64px;
+    font-weight: 900;
     color: var(--saber-red);
-    filter: drop-shadow(0 0 16px var(--saber-red));
+    filter: drop-shadow(0 0 32px var(--saber-red)) drop-shadow(0 0 64px var(--saber-red));
     pointer-events: none;
     opacity: 0;
     z-index: 50;
+    letter-spacing: 4px;
   }
 
   @keyframes penaltyPop {
-    0%   { opacity: 1; transform: translate(-50%, -50%) scale(0.6); }
-    30%  { opacity: 1; transform: translate(-50%, -65%) scale(1.2); }
-    100% { opacity: 0; transform: translate(-50%, -90%) scale(0.9); }
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+    15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+    40%  { opacity: 1; transform: translate(-50%, -55%) scale(1.0); }
+    100% { opacity: 0; transform: translate(-50%, -80%) scale(0.8); }
   }
 
   .kessel-penalty-flash.show {
-    animation: penaltyPop 0.9s ease forwards;
+    animation: penaltyPop 1.4s ease forwards;
   }
 
   .kessel-result {
@@ -1013,13 +1077,12 @@
 
   /* ===== FOOTER ===== */
   .page-footer {
-    position: fixed;
-    bottom: 14px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
     z-index: 10;
     text-align: center;
     white-space: nowrap;
+    padding: 20px 20px 28px;
+    width: 100%;
   }
 
   .page-footer,
@@ -1071,8 +1134,8 @@
       <span class="setup-label">▸ Confirm your training numbers</span>
 
       <div class="quick-btns">
-        <button class="quick-btn" onclick="selectRange(2,12)">Basic (2–12)</button>
-        <button class="quick-btn" onclick="selectAll()">All (0–12)</button>
+        <button class="quick-btn" onclick="selectRange(2,13)">Basic (2–13)</button>
+        <button class="quick-btn" onclick="selectAll()">All (0–13)</button>
         <button class="quick-btn" onclick="selectNone()">Clear</button>
       </div>
 
@@ -1088,14 +1151,19 @@
       </div>
 
       <div class="saber-divider" style="margin: 20px 0 16px;"></div>
-      <div class="game-modes-row">
-        <div class="game-mode-col">
-          <span class="setup-label">▸ Hyperspace Mode <span style="color:var(--muted);font-size:10px;letter-spacing:1px;font-family:'Exo 2',sans-serif;">(timed challenge)</span></span>
-          <div class="quick-btns">
-            <button class="quick-btn mode-btn" id="hyperspaceToggle" onclick="toggleHyperspace()">⚡ Off</button>
-          </div>
+      <span class="setup-label">▸ Game mode</span>
+      <div class="game-mode-tiles">
+        <div class="game-mode-tile-wrap">
+          <button class="game-mode-tile-btn" id="hyperspaceToggle" onclick="toggleHyperspace()">
+            <span class="tile-icon">⚡</span>
+            <div class="tile-body">
+              <div class="tile-name">HYPERSPACE MODE</div>
+              <div class="tile-desc">Beat the clock — finish before launch!</div>
+            </div>
+            <span class="tile-badge" id="hyperspaceBadge">OFF</span>
+          </button>
           <div id="hyperspaceOptions" style="display:none;">
-            <span class="setup-label" style="font-size:10px; margin-bottom:10px; margin-top:4px;">▸ Time limit</span>
+            <span class="setup-label" style="font-size:10px; margin-bottom:8px;">▸ Time limit</span>
             <div class="quick-btns" id="difficultyBtns" style="flex-wrap:wrap;">
               <button class="quick-btn mode-btn selected-mode" data-diff="wicked-easy" onclick="setDifficulty('wicked-easy')">😌 Wicked Easy (5m)</button>
               <button class="quick-btn mode-btn" data-diff="harder" onclick="setDifficulty('harder')">😤 Harder (1m)</button>
@@ -1103,11 +1171,15 @@
             </div>
           </div>
         </div>
-        <div class="game-mode-col">
-          <span class="setup-label">▸ Kessel Run Mode <span style="color:var(--muted);font-size:10px;letter-spacing:1px;font-family:'Exo 2',sans-serif;">(wrong answers add +5s)</span></span>
-          <div class="quick-btns">
-            <button class="quick-btn mode-btn" id="kesselToggle" onclick="toggleKesselRun()">☄️ Off</button>
-          </div>
+        <div class="game-mode-tile-wrap">
+          <button class="game-mode-tile-btn" id="kesselToggle" onclick="toggleKesselRun()">
+            <span class="tile-icon">☄️</span>
+            <div class="tile-body">
+              <div class="tile-name">KESSEL RUN</div>
+              <div class="tile-desc">Wrong answers add +5s to your time</div>
+            </div>
+            <span class="tile-badge" id="kesselBadge">OFF</span>
+          </button>
         </div>
       </div>
 
@@ -1210,6 +1282,10 @@
     </div>
   </div>
 
+  <footer class="page-footer">
+    Created for fun. Created for free. Have fun! &nbsp;·&nbsp; © Brendan Schimmel &nbsp;·&nbsp; <a href="pages/feedback.html">💬 Feedback</a>
+  </footer>
+
 </div>
 
 <script>
@@ -1229,23 +1305,54 @@ let currentStarColor = '220, 240, 255';
 
   function buildStars() {
     stars = [];
-    const count = Math.floor((canvas.width * canvas.height) / 6000);
+    const count = Math.floor((canvas.width * canvas.height) / 7000);
     for (let i = 0; i < count; i++) {
       stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: Math.random() * 1.5 + 0.2,
+        r: Math.random() * 1.2 + 0.2,
         op: Math.random(),
-        speed: Math.random() * 0.008 + 0.002,
+        speed: Math.random() * 0.003 + 0.0005,  // much slower twinkle
         phase: Math.random() * Math.PI * 2
       });
     }
   }
 
   function draw(t) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Slow-rotating nebula gradient — two glowing blobs drifting around
+    const angle = t * 0.00006; // very slow rotation ~100s per full cycle
+    const cx1 = W * (0.5 + 0.45 * Math.cos(angle));
+    const cy1 = H * (0.5 + 0.45 * Math.sin(angle));
+    const cx2 = W * (0.5 + 0.45 * Math.cos(angle + Math.PI));
+    const cy2 = H * (0.5 + 0.45 * Math.sin(angle + Math.PI));
+    const cx3 = W * (0.5 + 0.35 * Math.cos(angle + Math.PI * 0.67));
+    const cy3 = H * (0.5 + 0.35 * Math.sin(angle + Math.PI * 0.67));
+
+    const g1 = ctx.createRadialGradient(cx1, cy1, 0, cx1, cy1, W * 0.55);
+    g1.addColorStop(0, 'rgba(26, 39, 68, 0.55)');
+    g1.addColorStop(1, 'transparent');
+    ctx.fillStyle = g1;
+    ctx.fillRect(0, 0, W, H);
+
+    const g2 = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, W * 0.45);
+    g2.addColorStop(0, 'rgba(60, 20, 80, 0.4)');
+    g2.addColorStop(1, 'transparent');
+    ctx.fillStyle = g2;
+    ctx.fillRect(0, 0, W, H);
+
+    const g3 = ctx.createRadialGradient(cx3, cy3, 0, cx3, cy3, W * 0.35);
+    g3.addColorStop(0, 'rgba(0, 40, 80, 0.3)');
+    g3.addColorStop(1, 'transparent');
+    ctx.fillStyle = g3;
+    ctx.fillRect(0, 0, W, H);
+
+    // Stars — subtle twinkle only (opacity 0.25 to 0.6)
     stars.forEach(s => {
-      const op = 0.15 + 0.85 * (0.5 + 0.5 * Math.sin(t * s.speed * 1000 + s.phase));
+      const op = 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(t * s.speed * 1000 + s.phase));
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(${currentStarColor}, ${op})`;
@@ -1558,8 +1665,8 @@ function launchShip() {
   const targetX = W + 150;
   const targetY = H * 0.15;
   shipAngle = Math.atan2(targetY - shipY, targetX - shipX);
-  shipSpeed = W / 120; // crosses in ~2 sec at 60fps
-  shipScale = Math.min(W, H) / 400;
+  shipSpeed = W / 260; // crosses in ~4.3 sec at 60fps
+  shipScale = Math.min(W, H) / 180;
 
   sounds.blasterFlyby();
 
@@ -1618,7 +1725,7 @@ function launchShip() {
           const tx = -150;
           const ty = H2 * 0.1;
           shipAngle = Math.atan2(ty - shipY, tx - shipX);
-          shipSpeed = W2 / 140;
+          shipSpeed = W2 / 280;
           setTimeout(() => sounds.blasterFlyby(), 200);
         }
         shipAnimFrame = requestAnimationFrame(animateShip);
@@ -1702,7 +1809,7 @@ function launchHyperspace(onComplete) {
 }
 
 // ===== APP STATE =====
-let selectedNums = new Set([2,3,4,5,6,7,8,9,10,11,12]);
+let selectedNums = new Set([2,3,4,5,6,7,8,9,10,11,12,13]);
 const sessionScores = [];
 let questions = [];
 let questionOps = [];   // 'multiply' | 'divide' per question
@@ -1729,12 +1836,12 @@ const kesselRunSessionScores = [];
 
 // ===== SETUP =====
 const grid = document.getElementById('numGrid');
-for (let i = 0; i <= 12; i++) {
+for (let i = 0; i <= 13; i++) {
   const btn = document.createElement('button');
   btn.className = 'num-btn' + (i >= 2 ? ' selected' : '');
   btn.textContent = i;
   btn.dataset.num = i;
-  if (i === 6) btn.style.gridColumn = '1';
+  if (i === 7) btn.style.gridColumn = '1';
   btn.onclick = () => toggleNum(i, btn);
   grid.appendChild(btn);
 }
@@ -1752,7 +1859,7 @@ function toggleNum(n, btn) {
 }
 
 function selectAll() {
-  selectedNums = new Set([...Array(13).keys()]);
+  selectedNums = new Set([...Array(14).keys()]);
   document.querySelectorAll('.num-btn').forEach(b => b.classList.add('selected'));
   sounds.navigate();
 }
@@ -1805,13 +1912,12 @@ function toggleHyperspace() {
   hyperspaceEnabled = !hyperspaceEnabled;
   const btn = document.getElementById('hyperspaceToggle');
   btn.classList.toggle('selected-mode', hyperspaceEnabled);
-  btn.textContent = hyperspaceEnabled ? '🚀 On' : '⚡ Off';
+  document.getElementById('hyperspaceBadge').textContent = hyperspaceEnabled ? 'ON' : 'OFF';
   document.getElementById('hyperspaceOptions').style.display = hyperspaceEnabled ? 'block' : 'none';
   if (hyperspaceEnabled && kesselRunEnabled) {
     kesselRunEnabled = false;
-    const kBtn = document.getElementById('kesselToggle');
-    kBtn.classList.remove('selected-mode');
-    kBtn.textContent = '☄️ Off';
+    document.getElementById('kesselToggle').classList.remove('selected-mode');
+    document.getElementById('kesselBadge').textContent = 'OFF';
   }
 }
 
@@ -1901,12 +2007,11 @@ function toggleKesselRun() {
   kesselRunEnabled = !kesselRunEnabled;
   const btn = document.getElementById('kesselToggle');
   btn.classList.toggle('selected-mode', kesselRunEnabled);
-  btn.textContent = kesselRunEnabled ? '☄️ On' : '☄️ Off';
+  document.getElementById('kesselBadge').textContent = kesselRunEnabled ? 'ON' : 'OFF';
   if (kesselRunEnabled && hyperspaceEnabled) {
     hyperspaceEnabled = false;
-    const hBtn = document.getElementById('hyperspaceToggle');
-    hBtn.classList.remove('selected-mode');
-    hBtn.textContent = '⚡ Off';
+    document.getElementById('hyperspaceToggle').classList.remove('selected-mode');
+    document.getElementById('hyperspaceBadge').textContent = 'OFF';
     document.getElementById('hyperspaceOptions').style.display = 'none';
   }
 }
@@ -1936,7 +2041,7 @@ function addKesselPenalty() {
   flash.classList.remove('show');
   void flash.offsetWidth;
   flash.classList.add('show');
-  setTimeout(() => flash.classList.remove('show'), 900);
+  setTimeout(() => flash.classList.remove('show'), 1400);
 }
 
 function startQuiz() {
@@ -2316,9 +2421,6 @@ function showScreen(name) {
 }
 </script>
 
-<footer class="page-footer">
-  Created for fun. Created for free. Have fun! &nbsp;·&nbsp; © Brendan Schimmel &nbsp;·&nbsp; <a href="pages/feedback.html">💬 Feedback</a>
-</footer>
 
 </body>
 </html>
