@@ -332,6 +332,10 @@
   .tile-icon {
     font-size: 24px;
     flex-shrink: 0;
+    transition: filter 0.3s;
+  }
+  .game-mode-tile-btn.selected-mode .tile-icon {
+    filter: drop-shadow(0 0 8px var(--saber-green)) drop-shadow(0 0 16px var(--saber-green));
   }
   .tile-body {
     flex: 1;
@@ -1942,6 +1946,7 @@ function setDifficulty(diff) {
   document.querySelectorAll('#difficultyBtns .diff-btn').forEach(btn => {
     btn.classList.toggle('selected-mode', btn.dataset.diff === diff);
   });
+  sounds.navigate();
 }
 
 function startHyperspaceTimer() {
