@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Galactic Math Academy</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23030712'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%231a2744' stroke='%2300d4ff' stroke-width='1.5'/%3E%3Cellipse cx='16' cy='16' rx='12' ry='4.5' fill='none' stroke='%23ffd700' stroke-width='1.5' opacity='0.9'/%3E%3Ccircle cx='7' cy='8' r='1.2' fill='%23e8f4ff' opacity='0.7'/%3E%3Ccircle cx='26' cy='7' r='1' fill='%23e8f4ff' opacity='0.5'/%3E%3Ccircle cx='27' cy='24' r='1.2' fill='%23e8f4ff' opacity='0.6'/%3E%3C/svg%3E">
 <style>
   :root {
     --space-black: #030712;
@@ -275,6 +276,57 @@
     color: var(--saber-blue);
     box-shadow: 0 0 12px var(--glow-blue);
   }
+
+  /* Op mode color groups */
+  .quick-btn.op-mul-div {
+    border-color: rgba(0, 212, 255, 0.3);
+    color: var(--saber-blue);
+  }
+  .quick-btn.op-mul-div:hover,
+  .quick-btn.op-mul-div.selected-mode {
+    background: rgba(0, 212, 255, 0.12);
+    border-color: var(--saber-blue);
+    color: var(--saber-blue);
+    box-shadow: 0 0 12px var(--glow-blue);
+  }
+  .quick-btn.op-add-sub {
+    border-color: rgba(57, 255, 20, 0.3);
+    color: var(--saber-green);
+  }
+  .quick-btn.op-add-sub:hover,
+  .quick-btn.op-add-sub.selected-mode {
+    background: rgba(57, 255, 20, 0.1);
+    border-color: var(--saber-green);
+    color: var(--saber-green);
+    box-shadow: 0 0 12px var(--glow-green);
+  }
+
+  /* Game modes side-by-side layout */
+  .game-modes-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .game-mode-col {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Restart button */
+  .restart-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    padding: 6px 10px;
+    transition: color 0.2s;
+    display: block;
+    margin: 10px auto 0;
+  }
+  .restart-btn:hover { color: var(--saber-red); }
 
   /* ===== BUTTONS ===== */
   .btn-primary {
@@ -943,7 +995,7 @@
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(0, 212, 255, 0.2);
     border-radius: 20px;
-    color: var(--muted);
+    color: var(--star-white);
     font-family: 'Orbitron', monospace;
     font-size: 9px;
     letter-spacing: 2px;
@@ -970,6 +1022,7 @@
     white-space: nowrap;
   }
 
+  .page-footer,
   .page-footer a {
     font-family: 'Exo 2', sans-serif;
     font-size: 11px;
@@ -1018,8 +1071,8 @@
       <span class="setup-label">▸ Confirm your training numbers</span>
 
       <div class="quick-btns">
+        <button class="quick-btn" onclick="selectRange(2,12)">Basic (2–12)</button>
         <button class="quick-btn" onclick="selectAll()">All (0–12)</button>
-        <button class="quick-btn" onclick="selectRange(2,9)">Basic (2–9)</button>
         <button class="quick-btn" onclick="selectNone()">Clear</button>
       </div>
 
@@ -1027,31 +1080,35 @@
 
       <span class="setup-label" style="margin-top:16px;">▸ Select operation mode</span>
       <div class="quick-btns" id="modeButtons">
-        <button class="quick-btn mode-btn selected-mode" data-mode="multiply" onclick="toggleOp('multiply')">× Multiply</button>
-        <button class="quick-btn mode-btn" data-mode="divide" onclick="toggleOp('divide')">÷ Divide</button>
-        <button class="quick-btn mode-btn" data-mode="add" onclick="toggleOp('add')">+ Add</button>
-        <button class="quick-btn mode-btn" data-mode="subtract" onclick="toggleOp('subtract')">− Subtract</button>
+        <button class="quick-btn mode-btn op-mul-div selected-mode" data-mode="multiply" onclick="toggleOp('multiply')">× Multiply</button>
+        <button class="quick-btn mode-btn op-mul-div" data-mode="divide" onclick="toggleOp('divide')">÷ Divide</button>
+        <button class="quick-btn mode-btn op-add-sub" data-mode="add" onclick="toggleOp('add')">+ Add</button>
+        <button class="quick-btn mode-btn op-add-sub" data-mode="subtract" onclick="toggleOp('subtract')">− Subtract</button>
         <button class="quick-btn mode-btn" data-mode="all" onclick="selectAllOps()">★ All</button>
       </div>
 
       <div class="saber-divider" style="margin: 20px 0 16px;"></div>
-      <span class="setup-label">▸ Hyperspace Mode <span style="color:var(--muted);font-size:10px;letter-spacing:1px;font-family:'Exo 2',sans-serif;">(optional timed challenge)</span></span>
-      <div class="quick-btns">
-        <button class="quick-btn mode-btn" id="hyperspaceToggle" onclick="toggleHyperspace()">⚡ Off</button>
-      </div>
-      <div id="hyperspaceOptions" style="display:none;">
-        <span class="setup-label" style="font-size:10px; margin-bottom:10px; margin-top:4px;">▸ Time limit</span>
-        <div class="quick-btns" id="difficultyBtns" style="flex-wrap:wrap;">
-          <button class="quick-btn mode-btn selected-mode" data-diff="wicked-easy" onclick="setDifficulty('wicked-easy')">😌 Wicked Easy (5m)</button>
-          <button class="quick-btn mode-btn" data-diff="harder" onclick="setDifficulty('harder')">😤 Harder (1m)</button>
-          <button class="quick-btn mode-btn" data-diff="hyperdrive" onclick="setDifficulty('hyperdrive')">⚡ Hyperdrive (30s)</button>
+      <div class="game-modes-row">
+        <div class="game-mode-col">
+          <span class="setup-label">▸ Hyperspace Mode <span style="color:var(--muted);font-size:10px;letter-spacing:1px;font-family:'Exo 2',sans-serif;">(timed challenge)</span></span>
+          <div class="quick-btns">
+            <button class="quick-btn mode-btn" id="hyperspaceToggle" onclick="toggleHyperspace()">⚡ Off</button>
+          </div>
+          <div id="hyperspaceOptions" style="display:none;">
+            <span class="setup-label" style="font-size:10px; margin-bottom:10px; margin-top:4px;">▸ Time limit</span>
+            <div class="quick-btns" id="difficultyBtns" style="flex-wrap:wrap;">
+              <button class="quick-btn mode-btn selected-mode" data-diff="wicked-easy" onclick="setDifficulty('wicked-easy')">😌 Wicked Easy (5m)</button>
+              <button class="quick-btn mode-btn" data-diff="harder" onclick="setDifficulty('harder')">😤 Harder (1m)</button>
+              <button class="quick-btn mode-btn" data-diff="hyperdrive" onclick="setDifficulty('hyperdrive')">⚡ Hyperdrive (30s)</button>
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div class="saber-divider" style="margin: 20px 0 16px;"></div>
-      <span class="setup-label">▸ Kessel Run Mode <span style="color:var(--muted);font-size:10px;letter-spacing:1px;font-family:'Exo 2',sans-serif;">(race the clock — wrong answers add +5s)</span></span>
-      <div class="quick-btns">
-        <button class="quick-btn mode-btn" id="kesselToggle" onclick="toggleKesselRun()">🏎️ Off</button>
+        <div class="game-mode-col">
+          <span class="setup-label">▸ Kessel Run Mode <span style="color:var(--muted);font-size:10px;letter-spacing:1px;font-family:'Exo 2',sans-serif;">(wrong answers add +5s)</span></span>
+          <div class="quick-btns">
+            <button class="quick-btn mode-btn" id="kesselToggle" onclick="toggleKesselRun()">☄️ Off</button>
+          </div>
+        </div>
       </div>
 
       <div class="error-msg" id="setupError"></div>
@@ -1074,7 +1131,7 @@
 
     <div id="kesselContainer" style="display:none; margin-bottom:16px;">
       <div class="kessel-timer-row">
-        <span class="kessel-label">🏎️ KESSEL RUN</span>
+        <span class="kessel-label">☄️ KESSEL RUN</span>
         <span class="kessel-elapsed" id="kesselElapsed">0:00</span>
       </div>
       <div class="kessel-penalty-row">
@@ -1106,6 +1163,7 @@
     </div>
 
     <div class="nav-dots" id="navDots"></div>
+    <button class="restart-btn" onclick="restartQuiz()">↺ RESTART</button>
   </div>
 
   <!-- RESULTS SCREEN -->
@@ -1140,6 +1198,11 @@
       <div id="kesselSessionSection" style="display:none; margin-bottom:20px;">
         <div class="session-scores-label">▸ SESSION TIMES</div>
         <div id="kesselSessionList"></div>
+      </div>
+
+      <div id="sessionSection" style="display:none; margin-bottom:20px;">
+        <div class="session-scores-label" style="color:var(--saber-blue);">▸ SESSION SCORES</div>
+        <div id="sessionList"></div>
       </div>
 
       <button class="btn-primary" onclick="retryQuiz()">↺ RETRY SAME NUMBERS</button>
@@ -1639,7 +1702,8 @@ function launchHyperspace(onComplete) {
 }
 
 // ===== APP STATE =====
-let selectedNums = new Set([0,1,2,3,4,5,6,7,8,9,10,11,12]);
+let selectedNums = new Set([2,3,4,5,6,7,8,9,10,11,12]);
+const sessionScores = [];
 let questions = [];
 let questionOps = [];   // 'multiply' | 'divide' per question
 let answers = [];
@@ -1667,9 +1731,10 @@ const kesselRunSessionScores = [];
 const grid = document.getElementById('numGrid');
 for (let i = 0; i <= 12; i++) {
   const btn = document.createElement('button');
-  btn.className = 'num-btn selected';
+  btn.className = 'num-btn' + (i >= 2 ? ' selected' : '');
   btn.textContent = i;
   btn.dataset.num = i;
+  if (i === 6) btn.style.gridColumn = '1';
   btn.onclick = () => toggleNum(i, btn);
   grid.appendChild(btn);
 }
@@ -1682,17 +1747,20 @@ function toggleNum(n, btn) {
     selectedNums.add(n);
     btn.classList.add('selected');
   }
+  sounds.navigate();
   document.getElementById('setupError').textContent = '';
 }
 
 function selectAll() {
   selectedNums = new Set([...Array(13).keys()]);
   document.querySelectorAll('.num-btn').forEach(b => b.classList.add('selected'));
+  sounds.navigate();
 }
 
 function selectNone() {
   selectedNums.clear();
   document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('selected'));
+  sounds.navigate();
 }
 
 function toggleOp(op) {
@@ -1700,12 +1768,14 @@ function toggleOp(op) {
   if (selectedOps.has(op)) selectedOps.delete(op);
   else selectedOps.add(op);
   updateOpButtons();
+  sounds.navigate();
   document.getElementById('setupError').textContent = '';
 }
 
 function selectAllOps() {
   selectedOps = new Set(['multiply', 'divide', 'add', 'subtract']);
   updateOpButtons();
+  sounds.navigate();
   document.getElementById('setupError').textContent = '';
 }
 
@@ -1727,6 +1797,7 @@ function selectRange(a, b) {
     if (n >= a && n <= b) { selectedNums.add(n); btn.classList.add('selected'); }
     else btn.classList.remove('selected');
   });
+  sounds.navigate();
 }
 
 // ===== HYPERSPACE MODE =====
@@ -1740,7 +1811,7 @@ function toggleHyperspace() {
     kesselRunEnabled = false;
     const kBtn = document.getElementById('kesselToggle');
     kBtn.classList.remove('selected-mode');
-    kBtn.textContent = '🏎️ Off';
+    kBtn.textContent = '☄️ Off';
   }
 }
 
@@ -1830,7 +1901,7 @@ function toggleKesselRun() {
   kesselRunEnabled = !kesselRunEnabled;
   const btn = document.getElementById('kesselToggle');
   btn.classList.toggle('selected-mode', kesselRunEnabled);
-  btn.textContent = kesselRunEnabled ? '🏎️ On' : '🏎️ Off';
+  btn.textContent = kesselRunEnabled ? '☄️ On' : '☄️ Off';
   if (kesselRunEnabled && hyperspaceEnabled) {
     hyperspaceEnabled = false;
     const hBtn = document.getElementById('hyperspaceToggle');
@@ -1869,8 +1940,8 @@ function addKesselPenalty() {
 }
 
 function startQuiz() {
-  if (selectedNums.size < 1) {
-    document.getElementById('setupError').textContent = '⚠ Select at least one number';
+  if (selectedNums.size < 3) {
+    document.getElementById('setupError').textContent = '⚠ Select at least 3 numbers';
     return;
   }
   const nums = [...selectedNums];
@@ -2151,12 +2222,41 @@ function showResults() {
     document.getElementById('kesselSessionSection').style.display = 'none';
   }
 
+  // Record regular session scores (non-Kessel)
+  if (!kesselRunEnabled) {
+    sessionScores.push({ correct, total: questions.length, pct });
+    document.getElementById('sessionSection').style.display = 'block';
+    document.getElementById('sessionList').innerHTML = sessionScores.map((s, i) =>
+      `<div class="session-score-row${s === sessionScores[sessionScores.length - 1] && i === sessionScores.length - 1 ? ' current-run' : ''}">
+        <span class="session-score-rank">#${i + 1}</span>
+        <span class="session-score-time">${s.correct}/${s.total}</span>
+        <span class="session-score-detail">${Math.round(s.pct * 100)}%</span>
+      </div>`
+    ).join('');
+  } else {
+    document.getElementById('sessionSection').style.display = 'none';
+  }
+
   showScreen('results');
 
   // Launch X-Wing if passing (≥ 75%) and hyperspace didn't already show an animation
   if (pct >= 0.75 && !hyperspaceHandled) {
     setTimeout(launchShip, 600);
   }
+}
+
+function restartQuiz() {
+  stopHyperspaceTimer();
+  stopKesselTimer();
+  hyperspaceHandled = false;
+  answers = new Array(questions.length).fill(null);
+  currentQ = 0;
+  score = 0;
+  buildNavDots();
+  showScreen('quiz');
+  loadQuestion(0);
+  if (hyperspaceEnabled) startHyperspaceTimer();
+  if (kesselRunEnabled) startKesselTimer();
 }
 
 function retryQuiz() {
@@ -2217,7 +2317,7 @@ function showScreen(name) {
 </script>
 
 <footer class="page-footer">
-  <a href="pages/feedback.html">💬 Got an idea or found a bug?</a>
+  Created for fun. Created for free. Have fun! &nbsp;·&nbsp; © Brendan Schimmel &nbsp;·&nbsp; <a href="pages/feedback.html">💬 Feedback</a>
 </footer>
 
 </body>
