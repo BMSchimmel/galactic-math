@@ -103,13 +103,14 @@ https://bmschimmel.github.io/galactic-math
 
 When picking up a Linear issue:
 
-1. Confirm you are on `main` and it is up to date: `git pull origin main`
-2. Create a branch following the naming convention above
-3. Make changes only to `index.html` unless the issue explicitly requires otherwise
-4. Follow all rules in `CLAUDE.md` — single file, no dependencies, no localStorage
-5. Commit with the Linear ID in every commit message
-6. Open a PR with `Fixes IDT-XX` in the description
-7. Do not merge — leave the PR for human review and approval
+1. Only pick up issues that are in the **"To Do"** state **and** have the **"claude"** label. Do not work on issues in any other state or without this label.
+2. Confirm you are on `main` and it is up to date: `git pull origin main`
+3. Create a branch following the naming convention above
+4. Make changes only to `index.html` unless the issue explicitly requires otherwise
+5. Follow all rules in `CLAUDE.md` — single file, no dependencies, no localStorage
+6. Commit with the Linear ID in every commit message
+7. Open a PR with `Fixes IDT-XX` in the description
+8. Do not merge — leave the PR for human review and approval
 
   After committing, always:
 
