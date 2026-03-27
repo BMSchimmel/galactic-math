@@ -34,6 +34,7 @@ The main app lives in `index.html`. Auxiliary pages (e.g. feedback form) live un
   - `--saber-blue` #00d4ff — primary interactive
   - `--saber-green` #39ff14 — correct/success
   - `--saber-red` #ff2d55 — wrong/error
+  - `--saber-purple` #b94fff — multiply/divide operations
   - `--gold` #ffd700 — achievements/rank
   - `--star-white` #e8f4ff — body text
   - `--muted` #6b7fa3 — secondary text
@@ -41,16 +42,18 @@ The main app lives in `index.html`. Auxiliary pages (e.g. feedback form) live un
 
 ## Key Features (do not break these)
 
-- Number selector (0–12) with quick-select buttons
+- Number selector (0–13) with quick-select presets (Basic 2–12, All 0–13, etc.)
 - Operation mode selector: Multiply, Divide, Add, Subtract, or All
 - 20 randomized questions per session
-- Keyboard-only navigation: Enter to submit, ←→ to move between questions
+- Keyboard-only navigation: Enter to submit answer
 - Nav dots showing answered/unanswered/current state
 - Correct/wrong sound effects on answer submission
 - Keypress sounds on number input
-- X-Wing flyby animation + victory fanfare on passing (≥75%)
-- Hyperspace mode: timed challenge with countdown bar (Wicked Easy / Kind of Easy / Hard / Falcon Mode)
+- Comet streaks celebration on passing (≥75%) in Standard and Kessel Run modes
+- Hyperspace mode: timed challenge tile with difficulty cards (Wicked Easy 5m / Harder 3m / Hyperdrive 1m) and a countdown bar; blue jump animation on completion
+- Kessel Run mode: time how fast you finish; wrong answers add a 5s penalty
 - Theme cycler: Dark, Dim, Midnight, Deep Blue, Retro — fixed button top-right corner
+- Session history panel showing scores and mode labels for all rounds played
 - Results screen with rank, score breakdown, and missed problem review
 - Retry (same numbers) and New Mission (back to setup) options
 - Feedback page at `pages/feedback.html` — linked from footer, pre-fills a GitHub issue on submit
