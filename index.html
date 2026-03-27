@@ -819,6 +819,30 @@
     color: var(--saber-blue);
     box-shadow: 0 0 10px var(--glow-blue);
   }
+
+  /* ===== FOOTER ===== */
+  .page-footer {
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .page-footer a {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .page-footer a:hover {
+    color: var(--saber-blue);
+  }
 </style>
 </head>
 <body>
@@ -1936,5 +1960,10 @@ function showScreen(name) {
   }
 }
 </script>
+
+<footer class="page-footer">
+  <a href="pages/feedback.html">💬 Got an idea or found a bug?</a>
+</footer>
+
 </body>
 </html>
