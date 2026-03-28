@@ -45,6 +45,7 @@ export default {
     // Rate limit by IP
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
     if (isRateLimited(ip)) {
+      console.log(`Rate limited: ${ip}`);
       return new Response(JSON.stringify({ error: 'Too many requests. Try again later.' }), {
         status: 429,
         headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
@@ -63,7 +64,7 @@ export default {
 
     // Honeypot check — bots fill hidden fields, humans leave them empty
     if (body.honeypot) {
-      // Return 200 to not tip off bots, but do nothing
+      console.log(`Honeypot triggered from ${ip}`);
       return new Response(JSON.stringify({ ok: true }), {
         status: 200,
         headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
@@ -99,6 +100,7 @@ export default {
     }
 
     const issue = await response.json();
+    console.log(`Issue created: ${issue.html_url} from ${ip}`);
     return new Response(JSON.stringify({ ok: true, url: issue.html_url }), {
       status: 200,
       headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
