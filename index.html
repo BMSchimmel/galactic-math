@@ -2118,11 +2118,8 @@ function selectNone() {
 }
 
 function toggleOp(op) {
-  if (selectedOps.has(op) && selectedOps.size === 1) {
-    selectedOps.clear(); // deselect the only active op
-  } else {
-    selectedOps = new Set([op]); // radio-select: switch to this op only
-  }
+  if (selectedOps.has(op)) selectedOps.delete(op);
+  else selectedOps.add(op);
   updateOpButtons();
   sounds.navigate();
   document.getElementById('setupError').textContent =
