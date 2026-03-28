@@ -1198,7 +1198,6 @@
     cursor: pointer;
     transition: all 0.2s;
     backdrop-filter: blur(4px);
-    display: none;
   }
 
   .history-btn:hover {
@@ -2479,8 +2478,6 @@ function showResults() {
     document.getElementById('kesselResult').style.display = 'none';
     sessionScores.push({ mode: hyperspaceEnabled ? 'Hyperspace' : 'Standard', correct, total: questions.length, pct });
   }
-  updateHistoryBtn();
-
   // Always show unified session history
   document.getElementById('kesselSessionSection').style.display = 'none';
   document.getElementById('sessionSection').style.display = 'block';
@@ -2600,9 +2597,6 @@ function closeHistoryOnBackdrop(e) {
   if (e.target === document.getElementById('historyModal')) closeHistoryModal();
 }
 
-function updateHistoryBtn() {
-  document.getElementById('historyBtn').style.display = sessionScores.length > 0 ? 'block' : 'none';
-}
 
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
