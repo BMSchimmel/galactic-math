@@ -204,7 +204,7 @@
     background: rgba(10, 15, 30, 0.85);
     border: 1px solid rgba(0, 212, 255, 0.2);
     border-radius: 16px;
-    padding: 32px;
+    padding: 32px 32px 24px;
     backdrop-filter: blur(10px);
     box-shadow: 0 0 40px rgba(0, 212, 255, 0.08), inset 0 0 60px rgba(0, 0, 0, 0.3);
   }
@@ -821,9 +821,10 @@
     color: var(--saber-red);
     font-size: 12px;
     letter-spacing: 1px;
-    margin-top: 10px;
-    min-height: 18px;
     font-family: 'Orbitron', monospace;
+  }
+  .error-msg:not(:empty) {
+    margin: 10px 0 0;
   }
 
   /* ===== SPACESHIP FLYBY ===== */
@@ -1456,7 +1457,7 @@
       </div>
 
       <div class="error-msg" id="setupError"></div>
-      <div class="saber-divider"></div>
+      <div class="saber-divider" style="margin: 14px 0;"></div>
       <button class="btn-primary" onclick="startQuiz()" id="startBtn">
         🚀 BEGIN TRAINING MISSION
       </button>
