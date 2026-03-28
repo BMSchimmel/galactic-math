@@ -261,7 +261,14 @@
       <span class="field-label">▸ What's your idea or what's broken?</span>
       <textarea class="field-input field-textarea" id="inputMessage"
                 placeholder="Tell us what you'd like to see, or describe the bug..."
-                maxlength="2000"></textarea>
+                maxlength="500" oninput="updateCharCount()"></textarea>
+      <div style="text-align:right; font-size:11px; color:var(--muted); margin-top:-18px; margin-bottom:16px;">
+        <span id="charCount">0</span> / 500
+      </div>
+
+      <!-- Honeypot: hidden from real users, bots fill it in -->
+      <input type="text" id="honeypot" autocomplete="off"
+             style="display:none" tabindex="-1" aria-hidden="true">
 
       <div class="error-msg" id="errorMsg"></div>
 
@@ -275,16 +282,33 @@
     <!-- CONFIRMATION STATE -->
     <div class="confirm-state" id="confirmState">
       <div class="confirm-icon">📡</div>
-      <div class="confirm-title">TRANSMISSION SENT!</div>
+      <div class="confirm-title">TRANSMISSION RECEIVED! ✓</div>
       <div class="confirm-body">
-        We've opened GitHub so you can submit your request.<br><br>
-        Once submitted, you can track it at<br>
+        Your feedback has been logged. Thanks, Commander!<br><br>
+        You can track all feedback at<br>
         <a href="https://github.com/bmschimmel/galactic-math/issues" target="_blank">
           github.com/bmschimmel/galactic-math/issues
         </a>
       </div>
       <button class="btn-primary" onclick="window.location.href='../index.html'">
         🚀 BACK TO TRAINING
+      </button>
+    </div>
+
+    <!-- ERROR STATE -->
+    <div class="confirm-state" id="errorState">
+      <div class="confirm-icon">⚠️</div>
+      <div class="confirm-title" style="color:var(--saber-red);filter:drop-shadow(0 0 10px var(--saber-red));">
+        TRANSMISSION FAILED
+      </div>
+      <div class="confirm-body">
+        Something went wrong on our end. Try again later, or submit directly at<br><br>
+        <a href="https://github.com/bmschimmel/galactic-math/issues/new" target="_blank">
+          github.com/bmschimmel/galactic-math/issues/new
+        </a>
+      </div>
+      <button class="btn-primary" onclick="showForm()">
+        ↺ TRY AGAIN
       </button>
     </div>
 
@@ -331,24 +355,60 @@
   requestAnimationFrame(draw);
 })();
 
+// TODO: Replace with your deployed Cloudflare Worker URL
+const WORKER_URL = 'PASTE_WORKER_URL_HERE';
+
 // ===== FEEDBACK =====
-function submitFeedback() {
+function updateCharCount() {
+  const len = document.getElementById('inputMessage').value.length;
+  document.getElementById('charCount').textContent = len;
+}
+
+function showForm() {
+  document.getElementById('formState').style.display = 'block';
+  document.getElementById('confirmState').style.display = 'none';
+  document.getElementById('errorState').style.display = 'none';
+}
+
+async function submitFeedback() {
   const name = document.getElementById('inputName').value.trim();
   const message = document.getElementById('inputMessage').value.trim();
+  const honeypot = document.getElementById('honeypot').value;
   const errorEl = document.getElementById('errorMsg');
+  const btn = document.querySelector('.btn-primary');
 
   if (!name) { errorEl.textContent = '⚠ Enter your name'; return; }
   if (!message) { errorEl.textContent = '⚠ Tell us your idea or what\'s broken'; return; }
+  if (message.length > 500) { errorEl.textContent = '⚠ Message must be 500 characters or fewer'; return; }
   errorEl.textContent = '';
 
-  const title = encodeURIComponent(`[Feedback] ${name}: ${message.slice(0, 60)}${message.length > 60 ? '…' : ''}`);
-  const body = encodeURIComponent(`**From:** ${name}\n\n**Message:**\n${message}`);
-  const url = `https://github.com/bmschimmel/galactic-math/issues/new?title=${title}&body=${body}`;
+  btn.disabled = true;
+  btn.textContent = '📡 TRANSMITTING...';
 
-  window.open(url, '_blank');
+  const title = `Feedback: ${name}: ${message.slice(0, 50)}${message.length > 50 ? '…' : ''}`;
+  const body = `**From:** ${name}\n\n**Message:**\n${message}`;
 
-  document.getElementById('formState').style.display = 'none';
-  document.getElementById('confirmState').style.display = 'block';
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, body, honeypot }),
+    });
+
+    if (res.ok) {
+      document.getElementById('formState').style.display = 'none';
+      document.getElementById('confirmState').style.display = 'block';
+    } else {
+      document.getElementById('formState').style.display = 'none';
+      document.getElementById('errorState').style.display = 'block';
+    }
+  } catch {
+    document.getElementById('formState').style.display = 'none';
+    document.getElementById('errorState').style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '📡 TRANSMIT FEEDBACK';
+  }
 }
 </script>
 </body>
