@@ -110,12 +110,13 @@ When picking up a Linear issue:
 
 1. Only pick up issues that are in the **"To Do"** state **and** have the **"claude"** label. Do not work on issues in any other state or without this label.
 2. Confirm you are on `main` and it is up to date: `git pull origin main`
-3. Create a branch following the naming convention above
-4. Make changes only to `index.html` unless the issue explicitly requires otherwise
-5. Follow all rules in `CLAUDE.md` — single file, no dependencies, no localStorage
-6. Commit with the Linear ID in every commit message
-7. Open a PR with `Fixes IDT-XX` in the description
-8. Do not merge — leave the PR for human review and approval
+3. If no Linear issue exists for the work, create one and assign it to the **"Galactic Math"** project before starting
+4. Create a branch following the naming convention above
+5. Make changes only to `index.html` unless the issue explicitly requires otherwise
+6. Follow all rules in `CLAUDE.md` — single file, no dependencies, no localStorage
+7. Commit with the Linear ID in every commit message
+8. Open a PR with `Fixes IDT-XX` in the description
+9. Do not merge — leave the PR for human review and approval
 
   After committing, always:
 
