@@ -1,4 +1,4 @@
-# galactic-math
+# Galactic Math Academy
 Space themed math trainer for elementary school kids
 
 ![Galactic Math](https://img.shields.io/badge/grade-K--6-blue?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square) ![No dependencies](https://img.shields.io/badge/dependencies-none-brightgreen?style=flat-square)
