@@ -13,7 +13,7 @@ The main app lives in `index.html`. Auxiliary pages (e.g. feedback form) live un
 
 ## Tech Constraints
 
-- **One file for the app:** The game itself stays in `index.html` — HTML, CSS, and JS together. Auxiliary pages (feedback form, etc.) go in `pages/` only when an issue explicitly requires it.
+- **App structure:** The game entry point is `index.html` (HTML only). CSS lives in `assets/css/style.css` and JS lives in `assets/js/game.js`. Auxiliary pages (feedback form, etc.) go in `pages/` only when an issue explicitly requires it. Do not inline CSS or JS back into `index.html`.
 - **No external dependencies:** No npm, no frameworks, no CDN libraries except Google Fonts. The game must work offline after first load.
 - **No localStorage or cookies:** Don't persist data between sessions.
 - **Audio:** All sound effects are synthesized via Web Audio API by default. Do not fetch audio from external URLs. However, local audio files (e.g. `.m4a`, `.mp3`, `.wav`, `.ogg`) may be used when a file is explicitly provided in the repo (e.g. under `assets/audio/`). Load them with the Web Audio API (`fetch` + `decodeAudioData`) so playback is consistent with the rest of the audio system.
@@ -71,7 +71,7 @@ The main app lives in `index.html`. Auxiliary pages (e.g. feedback form) live un
 ## What to Always Do
 
 - Test changes by opening `index.html` directly in a browser — no server needed
-- Warn if size of index.html would be too long to affect performance problems
+- Warn if `assets/js/game.js` or `assets/css/style.css` grows significantly (each currently ~40 KB)
 - Preserve all existing sound effects when editing JS
 - Mobile-friendly: game should work on a tablet or phone
 
