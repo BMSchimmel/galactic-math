@@ -1474,7 +1474,7 @@ function generateStars() {
 function generateGates() {
   const opsArr = [...alienOps];
   const list   = [];
-  const yTop   = 500;   // leave space above for Earth approach
+  const yTop   = 850;   // leave space above for Earth approach
   const yBot   = 5200;  // near ship start
   const yStep  = (yBot - yTop) / (TOTAL_GATES - 1); // ~470px per gate at world scale
   for (let i = 0; i < TOTAL_GATES; i++) {
@@ -1491,7 +1491,7 @@ function generateFuelPickups() {
   const gatePts = gates.map(g => ({ x: g.x, y: g.y }));
   function tooClose(x, y) {
     if (Math.hypot(x-1000, y-5300) < 220) return true; // near spawn
-    if (Math.hypot(x-1000, y-200) < 260) return true;  // near Earth
+    if (Math.hypot(x-1000, y-700) < 260) return true;  // near Earth
     return gatePts.some(g => Math.hypot(x-g.x, y-g.y) < 110);
   }
   let tries = 0;
@@ -1513,7 +1513,7 @@ function generatePlanets() {
     { type: 'sun',     x: 1000, y: -180, r: 180 }, // above world — glow visible from top
     { type: 'mercury', x: 1680, y: 65,   r: 12  },
     { type: 'venus',   x: 330,  y: 148,  r: 38  },
-    { type: 'moon',    x: 870,  y: 320,  r: 22  }, // near Earth (y≈200)
+    { type: 'moon',    x: 870,  y: 840,  r: 22  }, // near Earth (y≈700)
     { type: 'mars',    x: 320,  y: 1400, r: 38  },
     { type: 'jupiter', x: 1760, y: 2600, r: 80  },
     { type: 'saturn',  x: 280,  y: 3600, r: 52  },
@@ -2419,7 +2419,7 @@ function drawStars() {
 }
 
 function drawEarth() {
-  const p = w2s(1000, 200);
+  const p = w2s(1000, 700);
   if (!onScreen(p.x, p.y, 280)) return;
   const R = EARTH_RADIUS;
   const t = Date.now() / 1000;
