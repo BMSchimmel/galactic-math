@@ -5,6 +5,14 @@ Each entry references the Linear issue ID (IDT-XX) and the GitHub PR that merged
 
 ---
 
+## 2026-05-05
+
+### IDT-134 — Add sound effect to transmit feedback button (PR #TBD)
+
+Added a themed transmission sound effect to the "📡 TRANSMIT FEEDBACK" button on `pages/feedback.html`. The sound plays an ascending radio-chirp sweep followed by a two-beep confirmation, giving the feel of a signal being beamed out. A self-contained Web Audio engine (mirroring the patterns used in `game.js`) was added inline to the feedback page since it does not load `game.js`.
+
+---
+
 ## 2026-04-15
 
 ### IDT-108 — Mobile support for Alien Invasion mode (PR #TBD)
