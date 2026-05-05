@@ -1470,14 +1470,16 @@ function generateFuelPickups() {
 }
 
 function generatePlanets() {
-  // Fixed decorative planets in world space
+  // Fixed decorative planets in world space.
+  // y increases downward; Earth is at y≈200 (top), ship spawns at y≈5300 (bottom).
+  // Solar system order top→bottom: Moon/Earth → Mars → Jupiter → Saturn → Uranus → Neptune
   return [
+    { type: 'moon',    x: 870,  y: 320,  r: 22 },  // near Earth (y≈200)
     { type: 'mars',    x: 320,  y: 1400, r: 38 },
     { type: 'jupiter', x: 1760, y: 2600, r: 80 },
     { type: 'saturn',  x: 280,  y: 3600, r: 52 },
-    { type: 'uranus',  x: 1820, y: 800,  r: 34 },
-    { type: 'neptune', x: 1700, y: 4400, r: 30 },
-    { type: 'moon',    x: 870,  y: 320,  r: 22 },  // near Earth
+    { type: 'uranus',  x: 1820, y: 4200, r: 34 },
+    { type: 'neptune', x: 300,  y: 4900, r: 30 },
   ];
 }
 
