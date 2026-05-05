@@ -430,7 +430,7 @@
 
       <div class="saber-divider"></div>
 
-      <button class="btn-primary" onclick="submitFeedback()">
+      <button class="btn-primary" onclick="playTransmitSound(); submitFeedback()">
         📡 TRANSMIT FEEDBACK
       </button>
     </div>
@@ -478,6 +478,55 @@
 </div>
 
 <script>
+// ===== AUDIO ENGINE =====
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(freq, type, duration, vol = 0.18, attack = 0.005) {
+  try {
+    const ctx = getAudio();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + attack);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration + 0.05);
+  } catch(e) {}
+}
+
+function playFreqSweep(startFreq, endFreq, type, duration, vol = 0.15) {
+  try {
+    const ctx = getAudio();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + duration);
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration + 0.05);
+  } catch(e) {}
+}
+
+// Transmission sound: ascending radio chirp → signal burst → confirmation beep
+function playTransmitSound() {
+  playFreqSweep(440, 1760, 'sine', 0.18, 0.1);
+  setTimeout(() => playFreqSweep(880, 2200, 'sine', 0.12, 0.07), 160);
+  setTimeout(() => playTone(1320, 'sine', 0.07, 0.1), 300);
+  setTimeout(() => playTone(1760, 'sine', 0.07, 0.08), 380);
+}
+
 // ===== STARS =====
 (function() {
   const canvas = document.getElementById('starfield');
