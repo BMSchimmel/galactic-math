@@ -519,12 +519,74 @@ function playFreqSweep(startFreq, endFreq, type, duration, vol = 0.15) {
   } catch(e) {}
 }
 
-// Transmission sound: ascending radio chirp → signal burst → confirmation beep
+// Transmission ray sound: sharp beam launch → signal pulse → lock-on ping
 function playTransmitSound() {
-  playFreqSweep(440, 1760, 'sine', 0.18, 0.1);
-  setTimeout(() => playFreqSweep(880, 2200, 'sine', 0.12, 0.07), 160);
-  setTimeout(() => playTone(1320, 'sine', 0.07, 0.1), 300);
-  setTimeout(() => playTone(1760, 'sine', 0.07, 0.08), 380);
+  try {
+    const ctx = getAudio();
+    const t = ctx.currentTime;
+
+    // Layer 1: laser-beam ray — fast hard sweep from low to very high
+    const ray = ctx.createOscillator();
+    const rayGain = ctx.createGain();
+    ray.connect(rayGain);
+    rayGain.connect(ctx.destination);
+    ray.type = 'sawtooth';
+    ray.frequency.setValueAtTime(120, t);
+    ray.frequency.exponentialRampToValueAtTime(4800, t + 0.35);
+    rayGain.gain.setValueAtTime(0.22, t);
+    rayGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+    ray.start(t);
+    ray.stop(t + 0.4);
+
+    // Layer 2: noise burst through a bandpass that sweeps up (adds "air" to the beam)
+    const bufSize = ctx.sampleRate;
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+    const noise = ctx.createBufferSource();
+    noise.buffer = buf;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.setValueAtTime(800, t);
+    bp.frequency.exponentialRampToValueAtTime(6000, t + 0.3);
+    bp.Q.value = 3;
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.12, t);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    noise.connect(bp);
+    bp.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noise.start(t);
+    noise.stop(t + 0.35);
+
+    // Layer 3: rapid warble mid-flight (comm signal modulation)
+    const warble = ctx.createOscillator();
+    const warbleGain = ctx.createGain();
+    warble.connect(warbleGain);
+    warbleGain.connect(ctx.destination);
+    warble.type = 'sine';
+    warble.frequency.setValueAtTime(1200, t + 0.1);
+    warble.frequency.exponentialRampToValueAtTime(2800, t + 0.28);
+    warbleGain.gain.setValueAtTime(0, t + 0.08);
+    warbleGain.gain.linearRampToValueAtTime(0.09, t + 0.13);
+    warbleGain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    warble.start(t + 0.08);
+    warble.stop(t + 0.35);
+
+    // Layer 4: sharp lock-on confirmation ping at the end
+    const ping = ctx.createOscillator();
+    const pingGain = ctx.createGain();
+    ping.connect(pingGain);
+    pingGain.connect(ctx.destination);
+    ping.type = 'sine';
+    ping.frequency.setValueAtTime(2200, t + 0.32);
+    ping.frequency.exponentialRampToValueAtTime(1760, t + 0.55);
+    pingGain.gain.setValueAtTime(0, t + 0.32);
+    pingGain.gain.linearRampToValueAtTime(0.14, t + 0.34);
+    pingGain.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+    ping.start(t + 0.32);
+    ping.stop(t + 0.6);
+  } catch(e) {}
 }
 
 // ===== STARS =====
