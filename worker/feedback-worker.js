@@ -5,7 +5,8 @@
 
 const GITHUB_REPO = 'bmschimmel/galactic-math';
 const ALLOWED_ORIGINS = [
-  'https://galactic-math.pages.dev',       // production
+  'https://galacticmath.app',               // production (custom domain)
+  'https://galactic-math.pages.dev',       // Cloudflare Pages fallback
   /^https:\/\/[a-z0-9-]+\.galactic-math\.pages\.dev$/, // branch/preview deployments
 ];
 const RATE_LIMIT_MAX = 3;

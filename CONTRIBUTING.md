@@ -138,7 +138,7 @@ Cloudflare Pages deploys automatically on every merge to `main`. No manual deplo
 step needed. The live site updates within ~60 seconds at:
 
 ```text
-https://galactic-math.pages.dev/
+https://galacticmath.app/
 ```
 
 ---

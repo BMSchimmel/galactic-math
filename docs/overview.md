@@ -90,6 +90,6 @@ The app has three screens, toggled with the `showScreen(name)` function by addin
 
 ## Deployment
 
-Cloudflare Pages deploys automatically from the `main` branch. Every merge to `main` triggers a deploy; the live site updates within ~60 seconds at `https://galactic-math.pages.dev/`.
+Cloudflare Pages deploys automatically from the `main` branch. Every merge to `main` triggers a deploy; the live site updates within ~60 seconds at `https://galacticmath.app/`.
 
 The feedback worker (`worker/feedback-worker.js`) is deployed separately to Cloudflare Workers via `wrangler`.

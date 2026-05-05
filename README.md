@@ -24,7 +24,7 @@ Space themed math trainer for elementary school kids
 
 ## 🚀 Play It Now
 
-👉 **[Launch Galactic Math Academy](https://galactic-math.pages.dev/)**
+👉 **[Launch Galactic Math Academy](https://galacticmath.app/)**
 
 Or download `index.html` and open it in any modern browser.
 
