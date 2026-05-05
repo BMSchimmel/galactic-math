@@ -1551,7 +1551,7 @@ function generateObstacles() {
     const a = Math.random()*Math.PI*2;
     const alienIndex = obs.filter(o=>o.type==='alien').length;
     const isShooter = alienIndex < N_ALIENS / 2; // first half are shooters
-    obs.push({ type:'alien', x, y, radius:22, vx:Math.cos(a)*(0.6+Math.random()*0.65), vy:Math.sin(a)*(0.6+Math.random()*0.65), wobble:Math.random()*Math.PI*2, color:isShooter?'#ff2d55':'#39ff14', isShooter, nextShot: Date.now() + 4000 + Math.random() * 5000 });
+    obs.push({ type:'alien', x, y, radius:22, vx:Math.cos(a)*(0.6+Math.random()*0.65), vy:Math.sin(a)*(0.6+Math.random()*0.65), wobble:Math.random()*Math.PI*2, color:'#ff2d55', isShooter, nextShot: Date.now() + 4000 + Math.random() * 5000 });
   }
   return obs;
 }
@@ -2890,7 +2890,7 @@ function drawRadar() {
     return { x: mx + (wx / WORLD_W) * mw, y: my + (wy / WORLD_H) * mh };
   }
 
-  // Aliens — pulsing, colored by type (red=shooter, green=non-shooter)
+  // Aliens — pulsing, all red
   const pulse = 0.7 + 0.3 * Math.sin(Date.now() / 400);
   for (const obs of aliens) {
     const r = toR(obs.x, obs.y);
