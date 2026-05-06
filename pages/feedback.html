@@ -430,7 +430,7 @@
 
       <div class="saber-divider"></div>
 
-      <button class="btn-primary" onclick="submitFeedback()">
+      <button class="btn-primary" onclick="playTransmitSound(); submitFeedback()">
         📡 TRANSMIT FEEDBACK
       </button>
     </div>
@@ -478,6 +478,117 @@
 </div>
 
 <script>
+// ===== AUDIO ENGINE =====
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(freq, type, duration, vol = 0.18, attack = 0.005) {
+  try {
+    const ctx = getAudio();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + attack);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration + 0.05);
+  } catch(e) {}
+}
+
+function playFreqSweep(startFreq, endFreq, type, duration, vol = 0.15) {
+  try {
+    const ctx = getAudio();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + duration);
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration + 0.05);
+  } catch(e) {}
+}
+
+// Transmission ray sound: sharp beam launch → signal pulse → lock-on ping
+function playTransmitSound() {
+  try {
+    const ctx = getAudio();
+    const t = ctx.currentTime;
+
+    // Layer 1: laser-beam ray — fast hard sweep from low to very high
+    const ray = ctx.createOscillator();
+    const rayGain = ctx.createGain();
+    ray.connect(rayGain);
+    rayGain.connect(ctx.destination);
+    ray.type = 'sawtooth';
+    ray.frequency.setValueAtTime(120, t);
+    ray.frequency.exponentialRampToValueAtTime(4800, t + 0.35);
+    rayGain.gain.setValueAtTime(0.22, t);
+    rayGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+    ray.start(t);
+    ray.stop(t + 0.4);
+
+    // Layer 2: noise burst through a bandpass that sweeps up (adds "air" to the beam)
+    const bufSize = ctx.sampleRate;
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+    const noise = ctx.createBufferSource();
+    noise.buffer = buf;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.setValueAtTime(800, t);
+    bp.frequency.exponentialRampToValueAtTime(6000, t + 0.3);
+    bp.Q.value = 3;
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.12, t);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    noise.connect(bp);
+    bp.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noise.start(t);
+    noise.stop(t + 0.35);
+
+    // Layer 3: rapid warble mid-flight (comm signal modulation)
+    const warble = ctx.createOscillator();
+    const warbleGain = ctx.createGain();
+    warble.connect(warbleGain);
+    warbleGain.connect(ctx.destination);
+    warble.type = 'sine';
+    warble.frequency.setValueAtTime(1200, t + 0.1);
+    warble.frequency.exponentialRampToValueAtTime(2800, t + 0.28);
+    warbleGain.gain.setValueAtTime(0, t + 0.08);
+    warbleGain.gain.linearRampToValueAtTime(0.09, t + 0.13);
+    warbleGain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    warble.start(t + 0.08);
+    warble.stop(t + 0.35);
+
+    // Layer 4: sharp lock-on confirmation ping at the end
+    const ping = ctx.createOscillator();
+    const pingGain = ctx.createGain();
+    ping.connect(pingGain);
+    pingGain.connect(ctx.destination);
+    ping.type = 'sine';
+    ping.frequency.setValueAtTime(2200, t + 0.32);
+    ping.frequency.exponentialRampToValueAtTime(1760, t + 0.55);
+    pingGain.gain.setValueAtTime(0, t + 0.32);
+    pingGain.gain.linearRampToValueAtTime(0.14, t + 0.34);
+    pingGain.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+    ping.start(t + 0.32);
+    ping.stop(t + 0.6);
+  } catch(e) {}
+}
+
 // ===== STARS =====
 (function() {
   const canvas = document.getElementById('starfield');
