@@ -840,7 +840,7 @@ function launchAlienInvasion() {
   sounds.missionStart();
   setTimeout(() => {
     window.location.href = `pages/alien-invasion.html?nums=${encodeURIComponent(nums)}&ops=${encodeURIComponent(ops)}`;
-  }, 600);
+  }, 1900);
 }
 
 function startKesselTimer() {
