@@ -1,6 +1,6 @@
-# Galactic Math Academy — Architecture Overview
+# Galactic Math — Architecture Overview
 
-Galactic Math Academy is a space-themed math trainer for kids in grades K–6. The entire game is a **single HTML file** (`index.html`) with no build step, no external dependencies (beyond Google Fonts), and no server requirement. It runs entirely in the browser.
+Galactic Math is a space-themed math trainer for kids in grades K–6. The entire game is a **single HTML file** (`index.html`) with no build step, no external dependencies (beyond Google Fonts), and no server requirement. It runs entirely in the browser.
 
 ---
 

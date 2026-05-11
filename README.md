@@ -1,4 +1,4 @@
-# Galactic Math Academy
+# Galactic Math
 Space themed math trainer for elementary school kids
 
 ![Galactic Math](https://img.shields.io/badge/grade-K--6-blue?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square) ![No dependencies](https://img.shields.io/badge/dependencies-none-brightgreen?style=flat-square)
@@ -14,6 +14,7 @@ Space themed math trainer for elementary school kids
 - **Comet celebration** — passing scores (75%+) trigger streaking comets across the screen
 - **Hyperspace mode** — optional timed challenge: complete all 20 before the countdown hits zero (Wicked Easy / Harder / Hyperdrive)
 - **Kessel Run mode** — race against the clock; wrong answers add a 5-second penalty
+- **Alien Invasion mode** — canvas-based space shooter; pilot your rocket through 20 math gates, dodge asteroids and UFOs, and manage your oxygen supply
 - **Theme cycler** — switch between Dark, Dim, Midnight, Deep Blue, and Retro color themes
 - **Session history** — track your scores across all rounds without any persistent storage
 - **Live grading** — see your score as you go, full breakdown at the end with missed problems reviewed
@@ -24,7 +25,7 @@ Space themed math trainer for elementary school kids
 
 ## 🚀 Play It Now
 
-👉 **[Launch Galactic Math Academy](https://galacticmath.app/)**
+👉 **[Launch Galactic Math](https://galacticmath.app/)**
 
 Or download `index.html` and open it in any modern browser.
 
@@ -61,7 +62,7 @@ open index.html   # macOS
 | [docs/overview.md](docs/overview.md) | Architecture, file structure, screens, global state, deployment |
 | [docs/setup.md](docs/setup.md) | Number selection, operation modes, game mode selection, Begin Mission |
 | [docs/quiz-engine.md](docs/quiz-engine.md) | Question generation, answer submission, nav dots, live score |
-| [docs/game-modes.md](docs/game-modes.md) | Standard, Hyperspace, and Kessel Run modes; rank system |
+| [docs/game-modes.md](docs/game-modes.md) | Standard, Hyperspace, Kessel Run, and Alien Invasion modes; rank system |
 | [docs/audio-engine.md](docs/audio-engine.md) | Web Audio API primitives and sound library |
 | [docs/visuals.md](docs/visuals.md) | Starfield, ring shockwave, comet celebration, hyperspace jump, CSS animations |
 | [docs/ui.md](docs/ui.md) | Theme cycler, session history, keyboard navigation, mobile support |

@@ -71,6 +71,12 @@ A lightweight edge function that sits between the feedback form and GitHub.
 
 ---
 
+## Feedback Page Audio (IDT-134)
+
+The "📡 TRANSMIT FEEDBACK" submit button plays a themed transmission sound on click. The sound is synthesized via a self-contained Web Audio engine inlined directly in `pages/feedback.html` (the page does not load `game.js`). The effect is an ascending radio-chirp sweep followed by two short confirmation beeps, mimicking a signal being beamed out.
+
+---
+
 ## Workflow Page (`pages/workflow.html`)
 
 A separate informational page (linked from the footer) that explains the development workflow — how issues flow from user feedback through Linear to a merged PR. Not part of the core game; intended for contributors and curious users.

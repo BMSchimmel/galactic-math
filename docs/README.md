@@ -1,6 +1,6 @@
-# Galactic Math Academy — Documentation
+# Galactic Math — Documentation
 
-This folder contains developer documentation explaining how each part of Galactic Math Academy works.
+This folder contains developer documentation explaining how each part of Galactic Math works.
 
 ---
 

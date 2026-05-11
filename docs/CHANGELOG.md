@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Galactic Math Academy are listed here, newest first.
+All notable changes to Galactic Math are listed here, newest first.
 Each entry references the Linear issue ID (IDT-XX) and the GitHub PR that merged it.
 
 ---
@@ -14,6 +14,14 @@ Added a themed transmission sound effect to the "📡 TRANSMIT FEEDBACK" button 
 ---
 
 ## 2026-05-11
+
+### IDT-142 — Docs audit: remove "Academy" branding, sync docs with recent work (PR #TBD)
+
+Removed all occurrences of "Galactic Math Academy" from documentation, page titles, and link text across `docs/`, `README.md`, `CONTRIBUTING.md`, and `pages/`. The banner in the app already used "GALACTIC MATH"; the docs were just stale. Also filled documentation gaps introduced by recent issues: added an Alien Invasion mode section to `docs/game-modes.md`, added Alien Invasion touch-control details to `docs/ui.md`, documented the IDT-134 feedback audio in `docs/feedback-system.md`, and added the Alien Invasion game mode to `README.md`'s feature list.
+
+### IDT-141 — Fix OG image letterboxing and og:title length (PR #107)
+
+Rebuilt `og-image.png` using `logo-planet-only.png` (transparent background) composited on a full-bleed dark-navy gradient canvas with scattered stars and nebula blobs, eliminating the black letterbox bars that appeared in social share previews after IDT-109. Expanded `og:title`, `twitter:title`, and `<title>` from 21 characters ("Galactic Math Academy") to 55 characters ("Galactic Math — Space themed free math trainer for kids"), meeting the 30–60 character guideline for social validators.
 
 ### IDT-109 — Replace favicons and OG image with new branded logo (PR #TBD)
 
@@ -103,7 +111,7 @@ Added the Galactic Math favicon (SVG inline) to `pages/feedback.html` and `pages
 
 ### IDT-57 — Banner click returns to setup (PR #62)
 
-Clicking the "Galactic Math Academy" header banner now navigates back to the setup screen from any screen. Previously the banner was non-interactive.
+Clicking the "GALACTIC MATH" header banner now navigates back to the setup screen from any screen. Previously the banner was non-interactive.
 
 ### IDT-56 — Switch feedback title generation to Cloudflare Workers AI (PR #61)
 

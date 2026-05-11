@@ -58,7 +58,7 @@ A floating button (clock icon) in the top-right area opens a modal showing the s
 
 ## Banner Clicking
 
-Clicking the **Galactic Math Academy** header banner from any screen returns to the setup screen. This makes it easy for kids to restart without hunting for a button.
+Clicking the **GALACTIC MATH** header banner from any screen returns to the setup screen. This makes it easy for kids to restart without hunting for a button.
 
 ---
 
@@ -77,3 +77,7 @@ The layout is responsive down to ~375px wide. Key mobile considerations:
 - Operation mode buttons and game mode tiles are centered on small screens
 - The answer input is large and touch-friendly
 - A dedicated **Submit** button appears for touch users (Enter still works on keyboard)
+
+### Alien Invasion touch controls
+
+On touch devices, `pages/alien-invasion.html` renders a virtual D-pad (bottom-left) and a fire button (bottom-right). These wire into the same `keys[]` state used by keyboard input so all physics and audio remain unchanged. A pause button is also overlaid on-screen. The planet fact popup dismisses on tap. Responsive CSS (`≤600px`) shrinks the HUD bar, question text, and answer input for small phones, and stacks end-screen buttons vertically.
