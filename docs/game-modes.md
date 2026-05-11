@@ -71,6 +71,48 @@ A **comet celebration** plays on a passing score (≥75%).
 
 ---
 
+## Alien Invasion Mode
+
+A canvas-based space shooter at `pages/alien-invasion.html`. Selected numbers and operations are passed in via URL params (`nums`, `ops`) by the main setup screen.
+
+### Objective
+
+Pilot a rocket through 20 math gates scattered around the canvas. Answer each gate's question correctly to clear it. All gates must be cleared (in any order) to win.
+
+### Resources
+
+| Resource | Starting value | Notes |
+|---|---|---|
+| Oxygen | 100% | Drains continuously while thrusting; wrong answers cost −5% |
+| Lives | 5 | Lost by colliding with asteroids, UFO saucers, or comets |
+
+### Hazards
+
+- **Asteroids** — drifting rocks; collision causes screen shake and debris particles
+- **UFO saucers** — cause a multi-layered explosion on hit (boom, noise burst, alien screech, colorful particles)
+- **Comets** — streak across the canvas from random directions with glowing color trails
+
+### Bonus gates
+
+Three rainbow-colored gates require 3 correct answers each. Completing one refuels +10% O₂.
+
+### Audio warning
+
+When oxygen drops to 10%, a "low fuel" voice clip plays followed by rising-pitch tick sounds every second. The warning re-triggers after a refuel pickup.
+
+### Controls
+
+| Input | Action |
+|---|---|
+| Arrow keys / WASD | Thrust in direction |
+| Space | Fire missile |
+| Touch D-pad (bottom-left) | Directional thrust on touch devices |
+| Touch fire button (bottom-right) | Fire missile on touch devices |
+
+A pulsing directional arrow points toward the nearest uncleaned gate when it is off-screen.
+
+---
+
 ## Celebration Threshold
 
 All modes trigger a celebration when the score is **≥75% (15/20 questions correct)**. Hyperspace mode uses its own completion animation instead of a separate celebration.

@@ -1,4 +1,4 @@
-# Contributing to Galactic Math Academy
+# Contributing to Galactic Math
 
 ## Workflow Overview
 
