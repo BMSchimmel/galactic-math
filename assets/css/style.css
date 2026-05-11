@@ -305,9 +305,11 @@
     flex-direction: column;
     gap: 8px;
   }
-  /* Alien Invasion dev-mode link */
+  /* Alien Invasion button */
   .alien-invasion-link {
     display: block;
+    position: relative;
+    z-index: 0;
     text-align: center;
     margin-top: 10px;
     padding: 16px;
@@ -327,6 +329,48 @@
     border-color: rgba(57,255,20,0.55);
     color: rgba(57,255,20,0.9);
     background: rgba(57,255,20,0.04);
+  }
+  .alien-invasion-link.launching {
+    border-style: solid;
+    border-color: rgba(57,255,20,0.85);
+    background: rgba(5, 12, 20, 0.95);
+    color: rgba(57,255,20,0.95);
+    transition: none;
+    pointer-events: none;
+    animation: aiLaunchGlow 1.9s ease-out forwards;
+  }
+  .alien-invasion-link.launching::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(100% + 40px);
+    height: calc(100% + 40px);
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      transparent 350deg,
+      rgba(57,255,20,0.0) 352deg,
+      rgba(57,255,20,0.9) 358deg,
+      rgba(57,255,20,0.9) 360deg
+    );
+    border-radius: 14px;
+    filter: blur(3px);
+    pointer-events: none;
+    z-index: -1;
+    animation: aiSpinBeam 1.9s linear forwards;
+  }
+  @keyframes aiSpinBeam {
+    0%   { transform: translate(-50%, -50%) rotate(0deg);    opacity: 1; }
+    85%  { transform: translate(-50%, -50%) rotate(1080deg); opacity: 1; }
+    100% { transform: translate(-50%, -50%) rotate(1080deg); opacity: 0; }
+  }
+  @keyframes aiLaunchGlow {
+    0%   { box-shadow: none; }
+    15%  { box-shadow: 0 0 10px 2px rgba(57,255,20,0.7); }
+    50%  { box-shadow: 0 0 20px 5px rgba(57,255,20,0.9), 0 0 50px 10px rgba(57,255,20,0.3); }
+    85%  { box-shadow: 0 0 30px 8px rgba(57,255,20,0.8), 0 0 70px 14px rgba(57,255,20,0.25); }
+    100% { box-shadow: 0 0 50px 12px rgba(57,255,20,0.4), 0 0 100px 20px rgba(57,255,20,0.1); }
   }
   .game-mode-tile-btn {
     width: 100%;

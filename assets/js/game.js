@@ -837,6 +837,8 @@ function launchAlienInvasion() {
   }
   const nums = [...selectedNums].join(',');
   const ops = [...selectedOps].join(',');
+  const btn = document.querySelector('.alien-invasion-link');
+  if (btn) btn.classList.add('launching');
   sounds.missionStart();
   setTimeout(() => {
     window.location.href = `pages/alien-invasion.html?nums=${encodeURIComponent(nums)}&ops=${encodeURIComponent(ops)}`;
