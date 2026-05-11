@@ -837,7 +837,10 @@ function launchAlienInvasion() {
   }
   const nums = [...selectedNums].join(',');
   const ops = [...selectedOps].join(',');
-  window.location.href = `pages/alien-invasion.html?nums=${encodeURIComponent(nums)}&ops=${encodeURIComponent(ops)}`;
+  sounds.missionStart();
+  setTimeout(() => {
+    window.location.href = `pages/alien-invasion.html?nums=${encodeURIComponent(nums)}&ops=${encodeURIComponent(ops)}`;
+  }, 600);
 }
 
 function startKesselTimer() {
@@ -1102,7 +1105,6 @@ function submitAnswer() {
         }
       }
       if (next !== -1) {
-        sounds.dock();
         loadQuestion(next);
       }
     }, 600);
