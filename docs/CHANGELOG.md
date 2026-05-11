@@ -13,6 +13,14 @@ Added a themed transmission sound effect to the "📡 TRANSMIT FEEDBACK" button 
 
 ---
 
+## 2026-05-11
+
+### IDT-109 — Replace favicons and OG image with new branded logo (PR #TBD)
+
+Replaced `favicon.ico`, `favicon-192.png`, and `og-image.png` with a new planet logo featuring the four math operation symbols (+, −, ×, ÷, =) arranged in a Saturn-ring design. The planet-only mark is used for all favicon sizes; the full wordmark version (logo + "GALACTIC MATH" text) is used for the Open Graph / Twitter Card share image. An `apple-touch-icon` link was added to `index.html` pointing to the 192×192 PNG so iOS home-screen bookmarks also use the new icon. Source PNGs are stored in `assets/images/`.
+
+---
+
 ## 2026-04-15
 
 ### IDT-108 — Mobile support for Alien Invasion mode (PR #TBD)
