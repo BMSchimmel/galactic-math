@@ -2420,53 +2420,138 @@ function drawStars() {
   });
 }
 
+// ===== EARTH CONTINENT DATA =====
+// Real lat/lon polygons projected orthographically (Western Hemisphere view).
+// NA = North America, SA = South America, GR = Greenland.
+const EARTH_NA = [
+  [71,-157],[64,-165],[60,-167],[57,-162],
+  [60,-146],[57,-136],[52,-128],[49,-124],
+  [42,-124],[38,-123],[34,-120],[32,-117],
+  [28,-114],[23,-110],[20,-104],
+  [16,-98],[15,-91],[14,-91],
+  [11,-86],[9,-84],[9,-80],[9,-79],
+  [11,-83],[15,-84],[16,-86],[18,-88],[21,-87],
+  [21,-90],[19,-96],[22,-97],[27,-97],
+  [29,-94],[29,-89],[30,-88],[30,-86],[30,-84],
+  [27,-83],[25,-81],
+  [26,-80],[28,-80],[30,-81],
+  [32,-80],[33,-78],[35,-76],[37,-76],[38,-75],
+  [40,-74],[42,-70],[44,-68],[45,-63],[47,-53],
+  [52,-56],[55,-59],[58,-62],[60,-64],
+  [62,-68],[64,-77],[65,-84],[68,-85],[70,-88],[70,-90],
+  [72,-100],[71,-115],[70,-130],[71,-157]
+];
+const EARTH_SA = [
+  [12,-72],[11,-67],[11,-62],[10,-62],
+  [8,-60],[6,-57],[5,-52],[3,-51],[0,-51],
+  [-2,-44],[-3,-37],[-5,-35],
+  [-8,-35],[-12,-37],[-16,-39],
+  [-20,-40],[-23,-43],[-27,-48],[-30,-51],
+  [-33,-52],[-34,-54],[-38,-57],
+  [-41,-62],[-46,-65],[-50,-68],[-52,-68],[-55,-66],[-55,-72],
+  [-50,-74],[-42,-74],[-38,-73],[-32,-71],
+  [-27,-71],[-22,-70],[-18,-70],[-15,-75],
+  [-8,-78],[-3,-80],[0,-80],[1,-78],[3,-77],
+  [6,-77],[9,-76],[10,-75],[12,-72]
+];
+const EARTH_GR = [
+  [76,-74],[72,-74],[68,-75],[65,-53],[61,-44],[63,-41],
+  [67,-24],[72,-22],[76,-18],[80,-18],[83,-30],
+  [83,-42],[80,-54],[77,-62],[76,-74]
+];
+
 function drawEarth() {
   const p = w2s(1000, 700);
   if (!onScreen(p.x, p.y, 280)) return;
-  const R = EARTH_RADIUS;
-  const t = Date.now() / 1000;
+  const R  = EARTH_RADIUS;
+  const t  = Date.now() / 1000;
+  const cx = p.x, cy = p.y;
+  const pulse = 0.5 + 0.5 * Math.sin(t * 2.0);
 
-  // Outer atmospheric glow
-  const atmoGlow = ctx.createRadialGradient(p.x,p.y,R*0.85,p.x,p.y,R*2.1);
-  atmoGlow.addColorStop(0,'rgba(0,180,255,0.2)');
-  atmoGlow.addColorStop(0.4,'rgba(0,120,200,0.07)');
-  atmoGlow.addColorStop(1,'transparent');
-  ctx.fillStyle = atmoGlow; ctx.beginPath(); ctx.arc(p.x,p.y,R*2.1,0,Math.PI*2); ctx.fill();
+  // Orthographic projection — Western Hemisphere view, slowly rotating
+  const φ0 = 15 * Math.PI / 180;
+  const λ0 = (-80 + t * 1.5) * Math.PI / 180;
+  function proj(latDeg, lonDeg) {
+    const φ = latDeg * Math.PI / 180;
+    const λ = lonDeg * Math.PI / 180;
+    const cosC = Math.sin(φ0)*Math.sin(φ) + Math.cos(φ0)*Math.cos(φ)*Math.cos(λ - λ0);
+    if (cosC < 0) return null;
+    return [
+      cx + R * Math.cos(φ) * Math.sin(λ - λ0),
+      cy - R * (Math.cos(φ0)*Math.sin(φ) - Math.sin(φ0)*Math.cos(φ)*Math.cos(λ - λ0))
+    ];
+  }
+  function contPath(coords) {
+    let started = false;
+    ctx.beginPath();
+    for (const [lat, lon] of coords) {
+      const pt = proj(lat, lon);
+      if (!pt) continue;
+      if (!started) { ctx.moveTo(pt[0], pt[1]); started = true; }
+      else           ctx.lineTo(pt[0], pt[1]);
+    }
+    if (started) ctx.closePath();
+  }
 
-  // Planet body
-  const eg = ctx.createRadialGradient(p.x-R*0.28,p.y-R*0.28,R*0.1,p.x,p.y,R);
-  eg.addColorStop(0,'#5cc8f8');
-  eg.addColorStop(0.22,'#1e88e5');
-  eg.addColorStop(0.48,'#1565c0');
-  eg.addColorStop(0.64,'#2e7d32');
-  eg.addColorStop(0.78,'#388e3c');
-  eg.addColorStop(1,'#1a237e');
-  ctx.fillStyle = eg; ctx.beginPath(); ctx.arc(p.x,p.y,R,0,Math.PI*2); ctx.fill();
+  // Neon outer glow
+  const og = ctx.createRadialGradient(cx,cy,R*0.8,cx,cy,R*2.1);
+  og.addColorStop(0,`rgba(0,212,255,${0.14+0.06*pulse})`);
+  og.addColorStop(1,'transparent');
+  ctx.fillStyle = og; ctx.beginPath(); ctx.arc(cx,cy,R*2.1,0,Math.PI*2); ctx.fill();
 
-  // Landmass shapes (clipped to sphere)
-  ctx.save(); ctx.beginPath(); ctx.arc(p.x,p.y,R,0,Math.PI*2); ctx.clip();
-  ctx.fillStyle='#2e7d32';
-  ctx.beginPath(); ctx.ellipse(p.x+R*0.18, p.y-R*0.1, R*0.28, R*0.22, 0.5, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(p.x-R*0.32, p.y+R*0.2, R*0.2, R*0.3, -0.3, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(p.x+R*0.05, p.y+R*0.35, R*0.32, R*0.18, 0.2, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(p.x-R*0.1, p.y-R*0.42, R*0.18, R*0.12, -0.4, 0, Math.PI*2); ctx.fill();
+  // Dark midnight ocean
+  const oc = ctx.createRadialGradient(cx-R*0.2,cy-R*0.2,R*0.05,cx,cy,R);
+  oc.addColorStop(0,'#08285a'); oc.addColorStop(0.45,'#041540');
+  oc.addColorStop(0.85,'#020b25'); oc.addColorStop(1,'#010610');
+  ctx.fillStyle = oc; ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.fill();
 
-  // Cloud layers (slowly animated)
-  ctx.fillStyle='rgba(255,255,255,0.25)';
-  ctx.beginPath(); ctx.ellipse(p.x+R*0.05*Math.cos(t*0.04), p.y-R*0.28, R*0.38, R*0.1, t*0.02, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(p.x-R*0.2+R*0.06*Math.cos(t*0.035+1), p.y+R*0.05, R*0.28, R*0.08, -t*0.018, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(p.x+R*0.3, p.y+R*0.4, R*0.22, R*0.07, 0.3+t*0.02, 0, Math.PI*2); ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.clip();
 
-  // Polar ice cap
-  ctx.fillStyle='rgba(220,240,255,0.7)';
-  ctx.beginPath(); ctx.ellipse(p.x, p.y-R*0.78, R*0.42, R*0.16, 0, 0, Math.PI*2); ctx.fill();
+  // Lat / lon grid (dim)
+  ctx.strokeStyle = 'rgba(0,212,255,0.09)'; ctx.lineWidth = 0.8;
+  for (let lat = -75; lat <= 75; lat += 25) {
+    const pts = [];
+    for (let lon = -180; lon <= 180; lon += 4) { const pt = proj(lat,lon); if(pt) pts.push(pt); }
+    if (pts.length > 1) {
+      ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+      for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+      ctx.stroke();
+    }
+  }
+  for (let lon = -180; lon <= 180; lon += 30) {
+    const pts = [];
+    for (let lat = -80; lat <= 80; lat += 5) { const pt = proj(lat,lon); if(pt) pts.push(pt); }
+    if (pts.length > 1) {
+      ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+      for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+      ctx.stroke();
+    }
+  }
+
+  // Neon-green continents with glow
+  ctx.shadowColor = '#39ff14'; ctx.shadowBlur = 10;
+  for (const cont of [EARTH_NA, EARTH_SA, EARTH_GR]) {
+    contPath(cont);
+    ctx.fillStyle = '#1cee2c'; ctx.fill();
+    ctx.strokeStyle = '#39ff14'; ctx.lineWidth = 1; ctx.stroke();
+  }
+  ctx.shadowBlur = 0;
+
+  // Polar ice cap (north)
+  ctx.fillStyle = 'rgba(170,235,255,0.72)';
+  ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 10;
+  ctx.beginPath(); ctx.ellipse(cx, cy-R*0.79, R*0.42, R*0.16, 0, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+
   ctx.restore();
 
-  // Atmospheric rim (limb brightening)
+  // Pulsing neon rim (double ring)
   ctx.save();
-  ctx.shadowColor='#00aaff'; ctx.shadowBlur=22;
-  ctx.strokeStyle='rgba(100,200,255,0.35)'; ctx.lineWidth=4;
-  ctx.beginPath(); ctx.arc(p.x,p.y,R+2,0,Math.PI*2); ctx.stroke();
+  ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 22;
+  ctx.strokeStyle = `rgba(0,212,255,${0.75+0.18*pulse})`; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.arc(cx,cy,R+1,0,Math.PI*2); ctx.stroke();
+  ctx.strokeStyle = `rgba(0,212,255,${0.14+0.08*pulse})`; ctx.lineWidth = 10;
+  ctx.beginPath(); ctx.arc(cx,cy,R+6,0,Math.PI*2); ctx.stroke();
   ctx.restore();
 
   // Landing zone indicator: pulsing ring (only when all aliens destroyed)
@@ -2477,20 +2562,21 @@ function drawEarth() {
     ctx.strokeStyle = '#39ff14';
     ctx.lineWidth = 3;
     ctx.shadowColor = '#39ff14'; ctx.shadowBlur = 24;
-    ctx.beginPath(); ctx.arc(p.x,p.y,R+14,0,Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,R+14,0,Math.PI*2); ctx.stroke();
     ctx.globalAlpha = lpulse * 0.5;
-    ctx.beginPath(); ctx.arc(p.x,p.y,R+26,0,Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,R+26,0,Math.PI*2); ctx.stroke();
     ctx.restore();
-    // Label
     ctx.fillStyle='rgba(57,255,20,0.95)';
     ctx.font='700 11px Orbitron,monospace'; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
     ctx.shadowColor='#39ff14'; ctx.shadowBlur=14;
-    ctx.fillText('FLY HERE', p.x, p.y+R+44);
+    ctx.fillText('FLY HERE', cx, cy+R+44);
     ctx.shadowBlur=0;
   } else {
-    ctx.fillStyle='rgba(232,244,255,0.7)';
+    ctx.fillStyle='#00d4ff';
     ctx.font='700 11px Orbitron,monospace'; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
-    ctx.fillText('EARTH', p.x, p.y+R+22);
+    ctx.shadowColor='#00d4ff'; ctx.shadowBlur=8;
+    ctx.fillText('EARTH', cx, cy+R+22);
+    ctx.shadowBlur=0;
   }
 }
 
