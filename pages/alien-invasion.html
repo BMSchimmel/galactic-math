@@ -2421,8 +2421,8 @@ function drawStars() {
 }
 
 // ===== EARTH CONTINENT DATA =====
-// Real lat/lon polygons projected orthographically (Western Hemisphere view).
-// NA = North America, SA = South America, GR = Greenland.
+// Real lat/lon polygons rendered via orthographic projection.
+// All seven continents so the globe looks right as it spins.
 const EARTH_NA = [
   [71,-157],[64,-165],[60,-167],[57,-162],
   [60,-146],[57,-136],[52,-128],[49,-124],
@@ -2459,6 +2459,49 @@ const EARTH_GR = [
   [67,-24],[72,-22],[76,-18],[80,-18],[83,-30],
   [83,-42],[80,-54],[77,-62],[76,-74]
 ];
+// Europe (simplified clockwise perimeter)
+const EARTH_EU = [
+  [36,-9],[44,-9],[44,2],[43,5],[44,8],[44,14],
+  [38,22],[37,28],[42,28],[47,38],
+  [50,30],[54,19],[56,10],[58,8],[62,5],
+  [70,28],[68,33],[65,33],[60,25],[59,22],
+  [55,21],[54,14],[54,10],[56,8],
+  [52,4],[51,2],[50,-4],[48,-5],[46,-2],[44,-2],[40,-8],[36,-9]
+];
+// Africa (clockwise from NW corner)
+const EARTH_AF = [
+  [36,-5],[37,10],[32,12],[30,25],[31,32],
+  [22,37],[12,44],[5,42],
+  [-5,40],[-11,40],[-27,33],[-35,26],[-35,20],[-34,18],
+  [-30,15],[-17,12],[-5,12],
+  [0,8],[4,2],[5,-2],[5,-8],[8,-11],[10,-15],[14,-17],
+  [20,-17],[30,-10],[36,-5]
+];
+// Asia — full outline including Arabia and Indian subcontinent
+const EARTH_AS = [
+  [42,36],[43,40],[42,50],[38,52],
+  [38,62],[42,72],[48,80],
+  [55,68],[62,62],[68,60],
+  [70,90],[70,140],[66,168],
+  [60,163],[52,160],[48,140],
+  [40,130],[35,129],[32,122],[22,114],
+  [18,110],[10,104],[5,103],
+  [2,104],[4,102],[5,100],[10,99],
+  [16,98],[20,93],[22,92],
+  [20,86],[14,80],[10,80],[8,77],
+  [10,76],[20,68],[23,62],[26,57],
+  [23,57],[17,55],[13,45],[12,44],
+  [15,42],[22,38],[27,34],[30,32],
+  [31,35],[36,36],[37,36],[42,36]
+];
+// Australia
+const EARTH_AU = [
+  [-14,129],[-12,136],[-12,142],[-10,142],
+  [-15,145],[-22,150],[-28,153],[-34,151],
+  [-38,147],[-39,147],[-38,141],[-36,137],
+  [-33,134],[-32,124],[-34,122],[-34,115],
+  [-28,114],[-22,114],[-18,122],[-16,124],[-14,129]
+];
 
 function drawEarth() {
   const p = w2s(1000, 700);
@@ -2468,9 +2511,9 @@ function drawEarth() {
   const cx = p.x, cy = p.y;
   const pulse = 0.5 + 0.5 * Math.sin(t * 2.0);
 
-  // Orthographic projection — Western Hemisphere view, slowly rotating
+  // Orthographic projection — Western Hemisphere start, spinning at 15°/s
   const φ0 = 15 * Math.PI / 180;
-  const λ0 = (-80 + t * 1.5) * Math.PI / 180;
+  const λ0 = (-80 + t * 15) * Math.PI / 180;
   function proj(latDeg, lonDeg) {
     const φ = latDeg * Math.PI / 180;
     const λ = lonDeg * Math.PI / 180;
@@ -2528,19 +2571,20 @@ function drawEarth() {
     }
   }
 
-  // Neon-green continents with glow
+  // Neon-green continents with glow (all seven)
   ctx.shadowColor = '#39ff14'; ctx.shadowBlur = 10;
-  for (const cont of [EARTH_NA, EARTH_SA, EARTH_GR]) {
+  for (const cont of [EARTH_NA, EARTH_SA, EARTH_GR, EARTH_EU, EARTH_AF, EARTH_AS, EARTH_AU]) {
     contPath(cont);
     ctx.fillStyle = '#1cee2c'; ctx.fill();
     ctx.strokeStyle = '#39ff14'; ctx.lineWidth = 1; ctx.stroke();
   }
   ctx.shadowBlur = 0;
 
-  // Polar ice cap (north)
+  // Polar ice caps (north + south, fixed at poles — don't rotate)
   ctx.fillStyle = 'rgba(170,235,255,0.72)';
   ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 10;
   ctx.beginPath(); ctx.ellipse(cx, cy-R*0.79, R*0.42, R*0.16, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx, cy+R*0.82, R*0.36, R*0.13, 0, 0, Math.PI*2); ctx.fill();
   ctx.shadowBlur = 0;
 
   ctx.restore();
