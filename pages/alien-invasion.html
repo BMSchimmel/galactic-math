@@ -594,6 +594,7 @@
 
     <div class="how-to-play">
       <b>Arrow keys / D-pad</b> to thrust &nbsp;·&nbsp; <b>Space / D-pad center</b> to fire &nbsp;·&nbsp; <b>P / ⏸</b> to pause<br>
+      <b>Prefer a trackpad?</b> Hold it down and drag the way you want to fly — let go to stop<br>
       <b>Fly through a ring</b> and answer correctly to earn a missile — you can reuse rings, just not the same one twice in a row<br>
       <b>Shoot all alien ships</b> to win &nbsp;·&nbsp; <b>⛽ Fuel pickups</b> restore +10% &nbsp;·&nbsp; Watch out for comets and asteroids
     </div>
@@ -679,7 +680,7 @@
 </div>
 
 <!-- ===== KEY HINT ===== -->
-<div id="keyHint">Arrow keys to thrust · Enter to submit · P to pause</div>
+<div id="keyHint">Arrow keys or hold-and-drag the trackpad to thrust · Space to fire · Enter to submit · P to pause</div>
 <div id="devBanner">🚧 Still in development — <a href="feedback.html" target="_blank">submit ideas here</a></div>
 
 <!-- ===== VIRTUAL JOYSTICK (mobile touch) ===== -->
@@ -1363,6 +1364,8 @@ function initGame() {
   screenShake   = 0;
   paused        = false;
   keys          = {};
+  mouseDrag     = { active: false, ox: 0, oy: 0, cx: 0, cy: 0 };
+  canvas.style.cursor = '';
   gameState     = 'countdown';
   rainbowAngle  = 0;
   particles     = [];
@@ -1386,9 +1389,14 @@ function initGame() {
 
   updateHUD();
 
-  window.addEventListener('keydown', onKeyDown);
-  window.addEventListener('keyup',   onKeyUp);
-  window.addEventListener('resize',  onResize);
+  window.addEventListener('keydown',   onKeyDown);
+  window.addEventListener('keyup',     onKeyUp);
+  window.addEventListener('resize',    onResize);
+  window.addEventListener('mousedown', onMouseDown);
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('mouseup',   endMouseDrag);
+  window.addEventListener('blur',      endMouseDrag);
+  document.addEventListener('mouseleave', endMouseDrag);
 
   if (animId) cancelAnimationFrame(animId);
   lastTs = 0;
@@ -1573,6 +1581,9 @@ function makeQuestion(op) {
 const MOVE_KEYS = new Set(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','a','A','d','D','w','W','s','S']);
 
 function onKeyDown(e) {
+  // Keyboard takes control back — before keys[] is set, since ending the drag
+  // clears the very arrow key that is being pressed.
+  if (MOVE_KEYS.has(e.key)) endMouseDrag();
   keys[e.key] = true;
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
     e.preventDefault();
@@ -1592,6 +1603,100 @@ function onKeyUp(e) {
   if (!anyMoveHeld) sounds.thrustStop();
 }
 
+// ===== SHARED DIRECTION MAPPING (touch D-pad + trackpad drag) =====
+// Both pointer inputs write into the same keys[] map the arrow keys use, so the
+// ship moves at exactly one fixed speed no matter how it is being driven.
+const vjoyArrows = {}; // D-pad arrow elements, cached by setupVpadEvents
+
+function setArrowActive(name, on) {
+  const el = vjoyArrows[name];
+  if (el) el.classList.toggle('active', on);
+}
+
+function clearDirKeys() {
+  keys['ArrowUp'] = keys['ArrowDown'] = keys['ArrowLeft'] = keys['ArrowRight'] = false;
+  setArrowActive('up',    false);
+  setArrowActive('down',  false);
+  setArrowActive('left',  false);
+  setArrowActive('right', false);
+}
+
+function applyDir(dx, dy) {
+  clearDirKeys();
+  const ax = Math.abs(dx), ay = Math.abs(dy);
+  // Allow diagonal: both axes fire when neither dominates by >2.5x
+  if (ax > ay * 0.4) {
+    if (dx > 0) { keys['ArrowRight'] = true; setArrowActive('right', true); }
+    else        { keys['ArrowLeft']  = true; setArrowActive('left',  true); }
+  }
+  if (ay > ax * 0.4) {
+    if (dy > 0) { keys['ArrowDown'] = true; setArrowActive('down', true); }
+    else        { keys['ArrowUp']   = true; setArrowActive('up',   true); }
+  }
+  if (gameState === 'playing' && !paused) sounds.thrustStart();
+}
+
+// ===== TRACKPAD DRIVING (PRESS & DRAG) =====
+// A browser cannot read a trackpad's surface — there is no absolute finger
+// position and no lift event. But holding the trackpad down IS mousedown and
+// taking the finger off IS mouseup, so the press point becomes the neutral
+// centre: hold and drag past the dead zone to thrust that way, keep holding to
+// keep going (the keys stay set, so no wiggling is needed), release to stop.
+
+const DRAG_DEAD_ZONE    = 16;  // px around the press point where the ship stays still
+const TOUCH_MOUSE_GRACE = 700; // ms after a touch that synthesized mouse events are ignored
+
+let mouseDrag  = { active: false, ox: 0, oy: 0, cx: 0, cy: 0 };
+let lastTouchAt = 0;
+
+function updateDragDir() {
+  const dx = mouseDrag.cx - mouseDrag.ox;
+  const dy = mouseDrag.cy - mouseDrag.oy;
+  if (Math.hypot(dx, dy) < DRAG_DEAD_ZONE) {
+    clearDirKeys();          // inside the neutral zone — coast
+    sounds.thrustStop();
+  } else {
+    applyDir(dx, dy);
+  }
+}
+
+function onMouseDown(e) {
+  if (gameState !== 'playing' || paused) return;
+  if (e.target !== canvas) return;                        // HUD buttons behave normally
+  if (Date.now() - lastTouchAt < TOUCH_MOUSE_GRACE) return;
+  e.preventDefault();                                     // no text-selection drag
+  mouseDrag.active = true;
+  mouseDrag.ox = mouseDrag.cx = e.clientX;
+  mouseDrag.oy = mouseDrag.cy = e.clientY;
+  canvas.style.cursor = 'none';                           // the drawn stick replaces it
+}
+
+function onMouseMove(e) {
+  if (!mouseDrag.active) return;
+  mouseDrag.cx = e.clientX;
+  mouseDrag.cy = e.clientY;
+  updateDragDir();
+}
+
+// Finger off the trackpad — also covers releasing outside the window, tab
+// switches, and the cursor leaving the page mid-drag.
+function endMouseDrag() {
+  if (!mouseDrag.active) return;
+  mouseDrag.active = false;
+  clearDirKeys();
+  sounds.thrustStop();
+  if (canvas) canvas.style.cursor = '';
+}
+
+function onTouchAnywhere() {
+  lastTouchAt = Date.now();
+  endMouseDrag(); // touch devices drive with the D-pad, not a synthesized mouse
+}
+
+function setupTrackpadEvents() {
+  window.addEventListener('touchstart', onTouchAnywhere, { passive: true });
+}
+
 // ===== VIRTUAL JOYSTICK (MOBILE TOUCH) =====
 function showVpad() {
   document.getElementById('vjoy').style.display  = 'block';
@@ -1603,38 +1708,15 @@ function hideVpad() {
 }
 
 function setupVpadEvents() {
-  const joyEl      = document.getElementById('vjoy');
-  const thumbEl    = document.getElementById('vjoy-thumb');
-  const arrowUp    = document.getElementById('vjoy-arrow-up');
-  const arrowDown  = document.getElementById('vjoy-arrow-down');
-  const arrowLeft  = document.getElementById('vjoy-arrow-left');
-  const arrowRight = document.getElementById('vjoy-arrow-right');
+  const joyEl   = document.getElementById('vjoy');
+  const thumbEl = document.getElementById('vjoy-thumb');
+  vjoyArrows.up    = document.getElementById('vjoy-arrow-up');
+  vjoyArrows.down  = document.getElementById('vjoy-arrow-down');
+  vjoyArrows.left  = document.getElementById('vjoy-arrow-left');
+  vjoyArrows.right = document.getElementById('vjoy-arrow-right');
 
   const OUTER_R   = 74;  // half of 148px circle
   const DEAD_ZONE = 18;  // px from center = fire zone, no thrust
-
-  function clearDirKeys() {
-    keys['ArrowUp'] = keys['ArrowDown'] = keys['ArrowLeft'] = keys['ArrowRight'] = false;
-    arrowUp.classList.remove('active');
-    arrowDown.classList.remove('active');
-    arrowLeft.classList.remove('active');
-    arrowRight.classList.remove('active');
-  }
-
-  function applyDir(dx, dy) {
-    clearDirKeys();
-    const ax = Math.abs(dx), ay = Math.abs(dy);
-    // Allow diagonal: both axes fire when neither dominates by >2.5x
-    if (ax > ay * 0.4) {
-      if (dx > 0) { keys['ArrowRight'] = true; arrowRight.classList.add('active'); }
-      else        { keys['ArrowLeft']  = true; arrowLeft.classList.add('active'); }
-    }
-    if (ay > ax * 0.4) {
-      if (dy > 0) { keys['ArrowDown'] = true; arrowDown.classList.add('active'); }
-      else        { keys['ArrowUp']   = true; arrowUp.classList.add('active'); }
-    }
-    if (gameState === 'playing' && !paused) sounds.thrustStart();
-  }
 
   function moveThumb(dx, dy, dist) {
     const clamp = Math.min(dist, OUTER_R - 16);
@@ -1688,7 +1770,7 @@ function setupVpadEvents() {
 
 function togglePause() {
   paused = !paused;
-  if (paused) sounds.thrustStop();
+  if (paused) { sounds.thrustStop(); endMouseDrag(); }
   document.getElementById('pauseBanner').style.display = paused ? 'block' : 'none';
   if (!paused) { lastTs = 0; animId = requestAnimationFrame(gameLoop); }
 }
@@ -1895,6 +1977,7 @@ function openGateQuestion(gate) {
   activatedGate = gate;
   gameState = 'question';
   sounds.thrustStop();
+  endMouseDrag(); // don't drift while the question is up
   sounds.gateEnter();
   currentQuestion = makeQuestion(gate.op);
 
@@ -2357,9 +2440,15 @@ function endGame(type, title, subtitle) {
 
 function cleanupListeners() {
   sounds.thrustStop();
-  window.removeEventListener('keydown', onKeyDown);
-  window.removeEventListener('keyup',   onKeyUp);
-  window.removeEventListener('resize',  onResize);
+  endMouseDrag(); // restores the cursor for the end screen
+  window.removeEventListener('keydown',   onKeyDown);
+  window.removeEventListener('keyup',     onKeyUp);
+  window.removeEventListener('resize',    onResize);
+  window.removeEventListener('mousedown', onMouseDown);
+  window.removeEventListener('mousemove', onMouseMove);
+  window.removeEventListener('mouseup',   endMouseDrag);
+  window.removeEventListener('blur',      endMouseDrag);
+  document.removeEventListener('mouseleave', endMouseDrag);
   if (animId) { cancelAnimationFrame(animId); animId = null; }
   hideVpad();
 }
@@ -2407,6 +2496,51 @@ function render() {
   drawComets();
   drawRadar();
   drawDirectionArrow();
+  drawDragStick();
+}
+
+// On-canvas joystick showing where the trackpad press landed (the neutral
+// centre) and how far it has been dragged. Replaces the hidden OS cursor.
+function drawDragStick() {
+  if (!mouseDrag.active || gameState !== 'playing') return;
+  const dx   = mouseDrag.cx - mouseDrag.ox;
+  const dy   = mouseDrag.cy - mouseDrag.oy;
+  const dist = Math.hypot(dx, dy);
+  const live = dist >= DRAG_DEAD_ZONE;
+  const col  = live ? '0, 212, 255' : '107, 127, 163';
+  const R    = 46;
+  const ang  = Math.atan2(dy, dx);
+  const tx   = mouseDrag.ox + Math.cos(ang) * Math.min(dist, R);
+  const ty   = mouseDrag.oy + Math.sin(ang) * Math.min(dist, R);
+
+  ctx.save();
+  // Outer ring — the neutral origin
+  ctx.strokeStyle = `rgba(${col}, 0.5)`;
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(mouseDrag.ox, mouseDrag.oy, R, 0, Math.PI*2); ctx.stroke();
+
+  // Dead zone
+  ctx.strokeStyle = `rgba(${col}, 0.28)`;
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(mouseDrag.ox, mouseDrag.oy, DRAG_DEAD_ZONE, 0, Math.PI*2); ctx.stroke();
+
+  // Stick shaft
+  if (live) {
+    ctx.strokeStyle = `rgba(${col}, 0.45)`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(mouseDrag.ox, mouseDrag.oy);
+    ctx.lineTo(tx, ty);
+    ctx.stroke();
+  }
+
+  // Thumb
+  ctx.fillStyle = `rgba(${col}, ${live ? 0.85 : 0.45})`;
+  ctx.beginPath(); ctx.arc(tx, ty, 13, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = `rgba(232, 244, 255, ${live ? 0.85 : 0.4})`;
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(tx, ty, 13, 0, Math.PI*2); ctx.stroke();
+  ctx.restore();
 }
 
 function drawStars() {
@@ -3127,6 +3261,7 @@ function drawDirectionArrow() {
 
 const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 setupVpadEvents();
+setupTrackpadEvents();
 
 if (autoLaunch) {
   document.getElementById('setupScreen').style.display = 'none';

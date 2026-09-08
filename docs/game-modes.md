@@ -106,8 +106,22 @@ When oxygen drops to 10%, a "low fuel" voice clip plays followed by rising-pitch
 |---|---|
 | Arrow keys / WASD | Thrust in direction |
 | Space | Fire missile |
+| Trackpad / mouse hold-and-drag | Directional thrust — press anywhere on the canvas, drag the way you want to fly, release to stop |
 | Touch D-pad (bottom-left) | Directional thrust on touch devices |
 | Touch fire button (bottom-right) | Fire missile on touch devices |
+
+Trackpad driving exists because arrow keys are awkward for younger players. The
+press point is the neutral centre: drag past a 16px dead zone to thrust that
+way, keep holding to keep flying (no need to keep moving the finger), release to
+stop. A joystick ring is drawn at the press point while dragging. Drag distance
+sets direction only — speed is always the same fixed `SHIP_SPEED`, matching the
+keyboard and D-pad. Pressing any movement key ends the drag and hands control
+back to the keyboard.
+
+Browsers cannot read a trackpad's surface — there is no absolute finger position
+and no lift event — so `mousedown` stands in for "finger down" and `mouseup` for
+"finger off". All three pointer inputs (keyboard, D-pad, trackpad) write into the
+same `keys[]` map, so `updateShip()` has one movement path regardless of input.
 
 A pulsing directional arrow points toward the nearest uncleaned gate when it is off-screen.
 
