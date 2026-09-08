@@ -106,22 +106,33 @@ When oxygen drops to 10%, a "low fuel" voice clip plays followed by rising-pitch
 |---|---|
 | Arrow keys / WASD | Thrust in direction |
 | Space | Fire missile |
-| Trackpad / mouse hold-and-drag | Directional thrust — press anywhere on the canvas, drag the way you want to fly, release to stop |
+| Trackpad / mouse click-to-fly | Click once to enter flying mode, then steer by moving the pointer off screen centre; click again to exit |
 | Touch D-pad (bottom-left) | Directional thrust on touch devices |
 | Touch fire button (bottom-right) | Fire missile on touch devices |
 
-Trackpad driving exists because arrow keys are awkward for younger players. The
-press point is the neutral centre: drag past a 16px dead zone to thrust that
-way, keep holding to keep flying (no need to keep moving the finger), release to
-stop. A joystick ring is drawn at the press point while dragging. Drag distance
-sets direction only — speed is always the same fixed `SHIP_SPEED`, matching the
-keyboard and D-pad. Pressing any movement key ends the drag and hands control
-back to the keyboard.
+Trackpad driving exists because arrow keys are awkward for younger players.
+Flying is a **mode** rather than a held gesture, since holding a click while
+dragging asks for more finger coordination than young kids have. One click turns
+flying mode on; from then on the trackpad is used normally with nothing held
+down. A dashed neutral ring is drawn at screen centre with a `✈ FLYING MODE`
+badge beneath it. Move the pointer more than 44px from centre and the ship flies
+that way — and keeps flying with the finger completely off the pad. Bring the
+pointer back inside the ring to stop. Click again, or press any movement key, to
+leave flying mode.
 
-Browsers cannot read a trackpad's surface — there is no absolute finger position
-and no lift event — so `mousedown` stands in for "finger down" and `mouseup` for
-"finger off". All three pointer inputs (keyboard, D-pad, trackpad) write into the
-same `keys[]` map, so `updateShip()` has one movement path regardless of input.
+Direction comes from the pointer's offset from **screen centre**, not from the
+ship's drawn position. The camera lerps toward the ship at `0.12`/frame, so
+measuring against the ship would feed its own motion back into the control and
+make it oscillate around the pointer; screen centre is a fixed origin, and the
+camera keeps the ship there anyway. Offset distance sets direction only — speed
+is always the same fixed `SHIP_SPEED`, matching the keyboard and D-pad.
+
+Browsers cannot read a trackpad's surface: there is no absolute finger position,
+no lift event, and a finger resting still is indistinguishable from a finger
+lifted (both are silence). A mode is what makes continuous flight possible
+without any of that. All three pointer inputs (keyboard, D-pad, trackpad) write
+into the same `keys[]` map, so `updateShip()` has one movement path regardless
+of input.
 
 A pulsing directional arrow points toward the nearest uncleaned gate when it is off-screen.
 

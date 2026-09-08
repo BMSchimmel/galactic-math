@@ -9,7 +9,7 @@ Each entry references the Linear issue ID (IDT-XX) and the GitHub PR that merged
 
 ### IDT-212 — Add trackpad steering to Alien Invasion (PR #119)
 
-Kids who find arrow keys awkward can now drive the ship with a trackpad. Holding the trackpad down anywhere on the game canvas sets a neutral centre; dragging past a 16px dead zone thrusts that way and keeps thrusting while held, and letting go stops the ship. A joystick ring is drawn at the press point while dragging. Drag distance sets direction only — speed stays the same fixed `SHIP_SPEED` as the keyboard and the touch D-pad, since all three inputs now write into the same `keys[]` map. Pressing any movement key ends the drag and returns control to the keyboard. Space remains the only way to fire.
+Kids who find arrow keys awkward can now drive the ship with a trackpad. Flying is a mode rather than a held gesture, since holding a click while dragging asks for more finger coordination than young kids have: one click on the game canvas turns flying mode on, and from then on the trackpad is used normally with nothing held down. A dashed neutral ring at screen centre marks "stop"; moving the pointer more than 44px off centre flies the ship that way and keeps it flying with the finger completely off the pad. Clicking again, or pressing any movement key, leaves flying mode. Pointer offset sets direction only — speed stays the same fixed `SHIP_SPEED` as the keyboard and the touch D-pad, since all three inputs now write into the same `keys[]` map. Direction is measured from screen centre rather than the ship's drawn position, so the camera's follow-lerp cannot feed back into the control and make it oscillate. Space remains the only way to fire.
 
 ---
 
