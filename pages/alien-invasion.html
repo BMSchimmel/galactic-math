@@ -307,8 +307,17 @@
   .hud-missiles { font-family: 'Orbitron', monospace; font-size: 15px; color: var(--saber-green); min-width: 24px; text-align: center; }
 
   /* ===== KEY HINT ===== */
-  #flyModeBadge { position: fixed; top: 50%; left: 50%; transform: translate(-50%, 62px); display: none; font-family: 'Orbitron', monospace; font-size: 11px; color: var(--saber-blue); text-shadow: 0 0 12px var(--saber-blue); letter-spacing: 2px; white-space: nowrap; pointer-events: none; z-index: 25; animation: flyModePulse 1.8s ease-in-out infinite; }
-  @keyframes flyModePulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+  #flyModeBadge {
+    position: fixed; bottom: 34px; left: 50%; transform: translateX(-50%);
+    display: none;
+    font-family: 'Orbitron', monospace; font-size: 11px; letter-spacing: 2px;
+    color: var(--saber-blue); text-shadow: 0 0 12px var(--saber-blue);
+    white-space: nowrap; pointer-events: none; z-index: 25;
+    padding: 7px 16px; border-radius: 999px;
+    border: 1px solid rgba(0,212,255,0.35); background: rgba(0,212,255,0.08);
+    animation: flyModePulse 1.8s ease-in-out infinite;
+  }
+  @keyframes flyModePulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
   #keyHint { position: fixed; bottom: 10px; right: 14px; font-size: 10px; color: rgba(107,127,163,0.4); pointer-events: none; z-index: 5; }
 
   /* ===== DEV BANNER ===== */
@@ -443,6 +452,11 @@
     .end-stat-val { font-size: 24px; }
     .end-btns { flex-direction: column; align-items: center; }
     .end-btn { width: 200px; text-align: center; }
+    .intro-body { font-size: 15px; margin-bottom: 22px; }
+    .intro-controls { gap: 9px 12px; padding: 14px 16px; margin-bottom: 22px; }
+    .ctrl-label { font-size: 9px; letter-spacing: 1px; }
+    .ctrl-desc { font-size: 13px; }
+    .ctrl-desc .sub { font-size: 12px; }
   }
 
   /* ===== ALIEN COUNTER (top-right, below HUD bar) ===== */
@@ -509,6 +523,30 @@
     margin-bottom: 32px;
   }
   .intro-body strong { color: var(--saber-green); }
+  .intro-controls {
+    display: none;
+    grid-template-columns: auto 1fr;
+    gap: 12px 18px;
+    text-align: left;
+    max-width: 520px;
+    margin-bottom: 30px;
+    padding: 18px 22px;
+    border: 1px solid rgba(0,212,255,0.25);
+    border-radius: 10px;
+    background: rgba(0,212,255,0.05);
+  }
+  .ctrl-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px; letter-spacing: 2px;
+    color: var(--saber-blue);
+    white-space: nowrap; padding-top: 3px;
+  }
+  .ctrl-desc {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 15px; color: var(--star-white); line-height: 1.5;
+  }
+  .ctrl-desc b { color: var(--saber-green); }
+  .ctrl-desc .sub { display: block; margin-top: 3px; font-size: 13px; color: var(--muted); }
   .intro-start-btn {
     padding: 14px 40px;
     background: linear-gradient(135deg, var(--saber-red), #aa1133);
@@ -621,6 +659,32 @@
     The solar system is under attack by aliens!<br>
     Visit the <strong>math rings</strong> and answer the question correctly to get <strong>missiles</strong> to take them out!
   </div>
+
+  <div class="intro-controls" id="introControlsKeys">
+    <span class="ctrl-label">🕹 MOVE</span>
+    <span class="ctrl-desc">
+      <b>Arrow keys</b> or <b>WASD</b>
+      <span class="sub">Rather use the trackpad? <b>Click once</b> to start flying, then just move the pointer — your ship follows. Point at the middle of the screen to stop, and click again to turn it off.</span>
+    </span>
+    <span class="ctrl-label">🚀 SHOOT</span>
+    <span class="ctrl-desc">
+      Press <b>SPACE</b>
+      <span class="sub">You need a missile first — fly through a math ring and answer its question correctly.</span>
+    </span>
+    <span class="ctrl-label">⏸ PAUSE</span>
+    <span class="ctrl-desc">Press <b>P</b></span>
+  </div>
+
+  <div class="intro-controls" id="introControlsTouch">
+    <span class="ctrl-label">🕹 MOVE</span>
+    <span class="ctrl-desc">Use the <b>D-pad</b> at the bottom-left</span>
+    <span class="ctrl-label">🚀 SHOOT</span>
+    <span class="ctrl-desc">
+      Tap the <b>🚀 FIRE</b> button at the bottom-right
+      <span class="sub">You need a missile first — fly through a math ring and answer its question correctly.</span>
+    </span>
+  </div>
+
   <button class="intro-start-btn" onclick="dismissIntro()">🚀 LAUNCH MISSION</button>
 </div>
 
@@ -1409,6 +1473,9 @@ let _introDismissListener = null;
 
 function showIntroExplainer() {
   document.getElementById('introOverlay').style.display = 'flex';
+  // Only show the controls that actually exist on this device
+  document.getElementById('introControlsKeys').style.display  = isTouchDevice ? 'none' : 'grid';
+  document.getElementById('introControlsTouch').style.display = isTouchDevice ? 'grid' : 'none';
   _introDismissListener = function(e) {
     if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
       e.preventDefault();

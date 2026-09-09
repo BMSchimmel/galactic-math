@@ -114,11 +114,12 @@ Trackpad driving exists because arrow keys are awkward for younger players.
 Flying is a **mode** rather than a held gesture, since holding a click while
 dragging asks for more finger coordination than young kids have. One click turns
 flying mode on; from then on the trackpad is used normally with nothing held
-down. A dashed neutral ring is drawn at screen centre with a `✈ FLYING MODE`
-badge beneath it. Move the pointer more than 44px from centre and the ship flies
-that way — and keeps flying with the finger completely off the pad. Bring the
-pointer back inside the ring to stop. Click again, or press any movement key, to
-leave flying mode.
+down. A dashed neutral ring is drawn at screen centre, and a `✈ FLYING MODE ·
+CLICK TO STOP` pill sits at the bottom of the screen while the mode is active.
+Move the pointer more than 44px from centre and the ship flies that way — and
+keeps flying with the finger completely off the pad. Bring the pointer back
+inside the ring to stop. Click again, or press any movement key, to leave flying
+mode.
 
 Direction comes from the pointer's offset from **screen centre**, not from the
 ship's drawn position. The camera lerps toward the ship at `0.12`/frame, so
@@ -133,6 +134,16 @@ lifted (both are silence). A mode is what makes continuous flight possible
 without any of that. All three pointer inputs (keyboard, D-pad, trackpad) write
 into the same `keys[]` map, so `updateShip()` has one movement path regardless
 of input.
+
+### Intro explainer
+
+`#introOverlay` appears after the mission is launched and before the countdown.
+Alongside the story text it lists how to move, shoot, and pause. Two variants
+exist in the markup and `showIntroExplainer()` shows only the one matching the
+device: `#introControlsKeys` (arrow keys / WASD, the trackpad click-to-fly
+explanation, Space to shoot, P to pause) or `#introControlsTouch` (D-pad, FIRE
+button). The touch variant omits pause because there is no on-screen pause
+control.
 
 A pulsing directional arrow points toward the nearest uncleaned gate when it is off-screen.
 
